@@ -28,6 +28,9 @@ public class AlgorithmRunner {
         boolean bret = data_processing_native.isPatchSupported(bDat , ApplicationRegion.LEVEL_1);
 
         Log.e(TAG,"data_processing_native.isPatchSupported11 returned " + bret);
+        if(!bret) {
+            return -1;
+        }
 
 
 
@@ -51,7 +54,7 @@ public class AlgorithmRunner {
             data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, packet, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset, oldState);
         } catch (DataProcessingException e) {
             Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
-            return -1;//?????
+            return -2; //???????
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully");
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());

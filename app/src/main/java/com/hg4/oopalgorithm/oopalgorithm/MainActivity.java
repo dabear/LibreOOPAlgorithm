@@ -85,11 +85,11 @@ public class MainActivity extends AppCompatActivity {
                 (byte)0x14, (byte)0x07, (byte)0x96, (byte)0x80, (byte)0x5a, (byte)0x00, (byte)0xed, (byte)0xa6,
                 (byte)0x0e, (byte)0x6e, (byte)0x1a, (byte)0xc8, (byte)0x04, (byte)0xdd, (byte)0x58, (byte)0x6d};
 
-        AlgorithmRunner.RunAlgorithm(getApplicationContext(), packet);
+        int sgv = AlgorithmRunner.RunAlgorithm(getApplicationContext(), packet);
         IntentsReceiver.RegisterReceiver(getApplicationContext());
 
 
-        //tv.setText(stringFromJNI());
+        tv.setText("Algorithm returned " + sgv);
     }
 
     @Override

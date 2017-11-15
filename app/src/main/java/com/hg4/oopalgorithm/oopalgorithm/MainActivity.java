@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.AlgorithmRunner;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingNative;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
 
-        DataProcessingNative.RunAlgorithm(getApplicationContext());
+        AlgorithmRunner.RunAlgorithm(getApplicationContext());
 
 
         //tv.setText(stringFromJNI());

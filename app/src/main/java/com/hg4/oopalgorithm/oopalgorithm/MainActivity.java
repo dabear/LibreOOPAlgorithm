@@ -88,8 +88,11 @@ public class MainActivity extends AppCompatActivity {
         int sgv = AlgorithmRunner.RunAlgorithm(getApplicationContext(), packet);
         IntentsReceiver.RegisterReceiver(getApplicationContext());
 
-
-        tv.setText("Algorithm returned " + sgv);
+        if(sgv == 63) {
+            tv.setText("Algorithm worked correctly");
+        } else {
+            tv.setText("Algorithm returned " + sgv);
+        }
     }
 
     @Override

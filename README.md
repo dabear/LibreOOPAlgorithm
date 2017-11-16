@@ -3,9 +3,9 @@ A framework for testing and implementing algorithms for libre.
 
 TLDR: To create the apk, please do the following:
 
-git clone https://github.com/tzachi-dar/LibreOOPAlgorithm.git
-cd LibreOOPAlgorithm
-scripts\create_apk.cmd
+git clone https://github.com/tzachi-dar/LibreOOPAlgorithm.git<br />
+cd LibreOOPAlgorithm<br />
+scripts\create_apk.cmd<br />
 
 The apk that you need to install is apk.aunaligned.apk
 

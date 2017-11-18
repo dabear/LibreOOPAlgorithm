@@ -44,7 +44,7 @@ apk=$(find-local-librelink)
 if [ "x${#apk}" == "x0" ] ; then
     echo "Could not find librelink in $HOME, trying to download from remote server"
     #not found, trying to redownload
-    apk="$HOME/test1LibreLink_v1.3.2.4.apk"
+    apk="$HOME/LibreLink_v1.3.2.4.apk"
     download-librelink "$apk"
     
     if [ $? -ne 0 ]; then
@@ -70,7 +70,7 @@ unzip  "$bdir/temp/app-debug.apk" -d "$bdir/temp/dir"
 rm -rf "$bdir/temp/dir/META-INF"
 
   
-cp "$bdir/LibreLink/apk/lib/*/libDataProcessing.so"
+
 cp "$bdir/LibreLink/apk/lib/arm64-v8a/libDataProcessing.so" "$bdir/temp/dir/lib/arm64-v8a/libDataProcessing.so"
 cp "$bdir/LibreLink/apk/lib/armeabi/libDataProcessing.so" "$bdir/temp/dir/lib/armeabi/libDataProcessing.so"
 cp "$bdir/LibreLink/apk/lib/armeabi-v7a/libDataProcessing.so" "$bdir/temp/dir/lib/armeabi-v7a/libDataProcessing.so"

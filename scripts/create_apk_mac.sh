@@ -77,7 +77,7 @@ cp "$bdir/LibreLink/apk/lib/armeabi-v7a/libDataProcessing.so" "$bdir/temp/dir/li
 cp "$bdir/LibreLink/apk/lib/x86/libDataProcessing.so" "$bdir/temp/dir/lib/x86/libDataProcessing.so"
 cp "$bdir/LibreLink/apk/lib/x86_64/libDataProcessing.so" "$bdir/temp/dir/lib/x86_64/libDataProcessing.so"
 
-cp "$bdir/LibreLink/LibreLink_v1.3.2.4_apkpure.com.apk" "$bdir/temp/dir/res/raw/"
+cp "$bdir/LibreLink/LibreLink_v1.3.2.4_apkpure.com.apk" "$bdir/temp/dir/res/raw/original_apk"
 
 pushd "$bdir/temp/dir"
 zip -r -X apk.aunaligned.zip .

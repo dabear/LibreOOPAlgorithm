@@ -8,9 +8,14 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+function do-sha1-check {
+  shasum "$1" 2>/dev/null || sha1sum "$1"
+}
+export -f do-sha1-check
+
 function download-librelink {
   wget -O "$1" "https://download.apkpure.com/b/apk/Y29tLmxpYnJlbGluay5hcHBfMTA2NTdfNzlkZGIyZDc?_fn=TGlicmVMaW5rX3YxLjMuMi40X2Fwa3B1cmUuY29tLmFwaw%3D%3D&k=322c052d0f9c34b28c1f67bc88de53c15a0fe122&as=2f14426570424edf58d775b630faf2645a0d3e9a&_p=Y29tLmxpYnJlbGluay5hcHA%3D&c=1%7CMEDICAL"
-  sha1sum=$(shasum "$1" |awk  '{print $1}')
+  sha1sum=$(do-sha1-check "$1" |awk  '{print $1}')
   if [ "$sha1sum" == "56baf72651def0e562590b406893e4f0e315b1cf" ] ; then
     return 0
   else
@@ -19,8 +24,7 @@ function download-librelink {
 }
 
 function find-local-librelink {
-  find $HOME -type f -not -path '*/\.*' -name '*.apk' -exec shasum {} + | grep '^56baf72651def0e562590b406893e4f0e315b1cf' | awk '{print $2}'
-  
+  find $HOME -type f -not -path '*/\.*' -name '*.apk' -exec bash -c 'do-sha1-check "{}"' \; | grep '^56baf72651def0e562590b406893e4f0e315b1cf' | awk '{print $2}'
   
 }
 

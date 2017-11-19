@@ -3,7 +3,8 @@
 #
 #Requirements:
 # 1) download jdk first to make sure the "jarsigner" command  is available
-# 2) Make sure wget command is installed. If not, install homebrew then do "brew install wget"
+# 1b) on ubuntu: see https://launchpad.net/~webupd8team/+archive/ubuntu/java
+# 2) Make sure wget command is installed. On mac, you can install homebrew then do "brew install wget"
 #
 RED='\033[0;31m'
 NC='\033[0m' # No Color
@@ -39,9 +40,12 @@ function finish {
 }
 trap finish EXIT
 
+
+jarsigner &> /dev/null || doexit "'jarsigner' command not found"
+wget --help &> /dev/null || doexit "'wget' command not found"
+
+
 mkdir -p "$bdir/LibreLink/apk"
-
-
 
 
 apk=$(find-local-librelink)

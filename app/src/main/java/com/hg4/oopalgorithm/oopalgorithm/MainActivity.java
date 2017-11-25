@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                 (byte)0x0e, (byte)0x6e, (byte)0x1a, (byte)0xc8, (byte)0x04, (byte)0xdd, (byte)0x58, (byte)0x6d};
 
         int sgv = AlgorithmRunner.RunAlgorithm(getApplicationContext(), packet);
-        IntentsReceiver.RegisterReceiver(getApplicationContext());
 
         if(sgv == 63) {
             tv.setText("Algorithm worked correctly");

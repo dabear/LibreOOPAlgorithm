@@ -67,12 +67,6 @@ public class IntentsReceiver extends BroadcastReceiver {
 
     }
 
-    static void RegisterReceiver(Context appContext) {
-        IntentFilter filter = new IntentFilter(Constants.XDRIP_PLUS_LIBRE_DATA);
-        IntentsReceiver receiver = new IntentsReceiver();
-        appContext.registerReceiver(receiver, filter);
-    }
-
     void BroadcastBack(Context context, int sgv, long timestamp) {
         // Broadcast the data back to xDrip.
         JSONObject jo = new JSONObject();

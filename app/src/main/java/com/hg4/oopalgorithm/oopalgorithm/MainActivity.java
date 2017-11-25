@@ -1,6 +1,8 @@
 package com.hg4.oopalgorithm.oopalgorithm;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,11 +17,20 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessi
 
 public class MainActivity extends AppCompatActivity {
 
-    // Used to load the 'native-lib' library on application startup.
-    //static {
-    //    System.loadLibrary("DataProcessing");
-    //}
+    static final  String TAG = "Xposed";
 
+    void SetVersion() {
+        TextView version = (TextView) findViewById(R.id.version);
+        String versionName;
+        try {
+            versionName = "version " + getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
+            versionName += "\nBuilt on: "+BuildConfig.buildVersion;
+            version.setText(versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            //e.printStackTrace();
+            Log.e(TAG,"PackageManager.NameNotFoundException:" + e.getMessage());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        SetVersion();
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        */
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
+
         byte[] packet = {(byte)0x3a, (byte)0xcf, (byte)0x10, (byte)0x16, (byte)0x03, (byte)0x00, (byte)0x00, (byte)0x00,
                 (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
                 (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,

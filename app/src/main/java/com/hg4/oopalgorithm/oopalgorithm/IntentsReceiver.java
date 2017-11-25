@@ -24,7 +24,7 @@ class Constants {
 }
 
 public class IntentsReceiver extends BroadcastReceiver {
-    static final  String TAG = "Xposed";
+    static final  String TAG = "OOPAlgorithm";
 
     @Override
     public void onReceive(Context context, Intent intent) {

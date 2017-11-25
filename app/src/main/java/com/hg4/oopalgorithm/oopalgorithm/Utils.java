@@ -15,7 +15,7 @@ import android.util.Log;
 
 class Utils {
 
-    static final  String TAG = "Xposed";
+    static final  String TAG = "OOPAlgorithm";
 
     // Use reflection print the value of an object
     public static String objectToString (Object obj) {

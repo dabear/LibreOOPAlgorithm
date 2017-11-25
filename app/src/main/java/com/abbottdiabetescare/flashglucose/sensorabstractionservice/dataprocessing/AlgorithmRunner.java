@@ -64,14 +64,14 @@ public class AlgorithmRunner {
     }
 
 
-    static final  String TAG = "Xposed";
+    static final  String TAG = "OOPAlgorithm";
 
 }
 
 class MyContextWrapper extends ContextWrapper {
 
     Context mBase;
-    static final  String TAG = "Xposed";
+    static final  String TAG = "OOPAlgorithm";
 
     MyContextWrapper(Context base) {
         super(base);

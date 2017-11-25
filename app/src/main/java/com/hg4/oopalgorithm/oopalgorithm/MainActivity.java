@@ -17,7 +17,7 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessi
 
 public class MainActivity extends AppCompatActivity {
 
-    static final  String TAG = "Xposed";
+    static final  String TAG = "OOPAlgorithm";
 
     void SetVersion() {
         TextView version = (TextView) findViewById(R.id.version);

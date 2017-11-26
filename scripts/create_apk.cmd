@@ -6,10 +6,10 @@ mkdir LibreLink
 if exist LibreLink\apk goto apk_exists
 
 cscript scripts\DownloadApk.js
-if errorlevel
+if errorlevel 1 (
     echo "Error downloading apk"
     goto Exit
-
+)
 
 mkdir LibreLink\apk
 tools\windows\7z -oLibreLink\apk x LibreLink\LibreLink_v1.3.2.4_apkpure.com.apk

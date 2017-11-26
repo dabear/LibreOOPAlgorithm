@@ -32,10 +32,6 @@ public class AlgorithmRunner {
             return -1;
         }
 
-
-
-
-
         AlarmConfiguration alarm_configuration = new AlarmConfiguration(70, 180);
         NonActionableConfiguration non_actionable_configuration = new NonActionableConfiguration (true, true, 0, 40, 500, -2, 2);
 
@@ -46,8 +42,6 @@ public class AlgorithmRunner {
                 (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
                 (byte)0xff, (byte)0xff, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
                 (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
-
-
 
         DataProcessingOutputs data_processing_outputs;
         try {
@@ -61,6 +55,10 @@ public class AlgorithmRunner {
 
         return data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue();
 
+    }
+
+    static public String getPackageCodePathNoCreate(Context context) {
+        return MyContextWrapper.getPackageCodePathNoCreate(context);
     }
 
 
@@ -77,7 +75,10 @@ class MyContextWrapper extends ContextWrapper {
         super(base);
         mBase = base;
         Log.e(TAG,"MyContextWrapper.MyContextWrapper() called ");
+    }
 
+    static String getPackageCodePathNoCreate(Context context) {
+        return context.getFilesDir().getPath() + "base111.apk";
     }
 
     @Override
@@ -85,7 +86,7 @@ class MyContextWrapper extends ContextWrapper {
         Log.e(TAG,"MyContextWrapper.getPackageCodePath() called mBase.getPackageCodePath() = " + mBase.getPackageCodePath());
 
         // Create the new path
-        String originalApkName = mBase.getFilesDir().getPath() + "base111.apk";
+        String originalApkName = getPackageCodePathNoCreate(mBase);
         Log.e(TAG,"MyContextWrapper newpath = " + originalApkName);
 
         // Check if file already exists
@@ -113,7 +114,7 @@ class MyContextWrapper extends ContextWrapper {
                 Log.e(TAG,"MyContextWrapper succesfully read  = " + readBytes);
             }
 
-            Log.e(TAG,"MyContextWrapper succesfully wrote file  = ");
+            Log.e(TAG,"MyContextWrapper succesfully wrote file  = " + originalApkName);
             out.close();
 
         } catch (IOException e) {

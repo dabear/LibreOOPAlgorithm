@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.AlgorithmRunner;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingNative;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
 
     static final  String TAG = "OOPAlgorithm";
@@ -104,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
         if(sgv == 63) {
             tv.setText("Algorithm worked correctly");
         } else {
-            tv.setText("Algorithm returned " + sgv);
+            String ApkName = AlgorithmRunner.getPackageCodePathNoCreate(getApplicationContext());
+            File f = new File(ApkName);
+            tv.setText("Algorithm returned " + sgv + " apk file size " + f.length());
+            Log.e(TAG, "Deleting file due to apk failure" + ApkName);
+            f.delete();
         }
     }
 

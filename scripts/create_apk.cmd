@@ -3,7 +3,9 @@
 rem Download apk file
 rem ==============
 mkdir LibreLink
-if exist LibreLink\apk goto apk_exists
+if exist LibreLink\apk goto apk_unzipped
+
+if exist LibreLink\LibreLink_v1.3.2.4_apkpure.com.apk goto apk_downloaded
 
 cscript scripts\DownloadApk.js
 if errorlevel 1 (
@@ -11,11 +13,13 @@ if errorlevel 1 (
     goto Exit
 )
 
+:apk_downloaded
+
 mkdir LibreLink\apk
 tools\windows\7z -oLibreLink\apk x LibreLink\LibreLink_v1.3.2.4_apkpure.com.apk
 
 
-:apk_exists
+:apk_unzipped
 
 rem Copy the commited apk, and manipulate it
 rem ==========================

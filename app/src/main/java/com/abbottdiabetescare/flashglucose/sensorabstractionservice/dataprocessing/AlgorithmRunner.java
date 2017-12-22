@@ -14,11 +14,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 
 public class AlgorithmRunner {
 
-    static public int RunAlgorithm(Context context, byte[] packet) {
+    static public int RunAlgorithm(Context context, byte[] packet, byte[] oldState) {
         DataProcessingNative data_processing_native= new DataProcessingNative(1095774808 /*DataProcessingType.APOLLO_PG2*/);
 
         MyContextWrapper my_context_wrapper = new MyContextWrapper(context);
@@ -38,20 +39,35 @@ public class AlgorithmRunner {
         int sensorStartTimestamp = 0x0e181349;
         int sensorScanTimestamp = 0x0e1c4794;
         int currentUtcOffset = 0x0036ee80;
-        byte[] oldState = {(byte)0xff, (byte)0xff, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
-                (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
-                (byte)0xff, (byte)0xff, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
-                (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+        if(oldState == null) {
+            byte[]oldState1 = {(byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                    (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+            oldState = Arrays.copyOf(oldState1, oldState1.length);
+        }
 
-        DataProcessingOutputs data_processing_outputs;
+        DataProcessingOutputs data_processing_outputs = null;
         try {
             data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, packet, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset, oldState);
         } catch (DataProcessingException e) {
             Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
-            return -2; //???????
+            return -2; //
         }
-        Log.e(TAG,"data_processing_native.processScan returned successfully");
+        Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs);
+        if(data_processing_outputs == null) {
+            Log.e(TAG,"data_processing_native.processScan returned null");
+            return -3; //
+        }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());
+
+        if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {
+            for(GlucoseValue glucoseValue : data_processing_outputs.getAlgorithmResults().getHistoricGlucose()) {
+                Log.e(TAG, "  id " + glucoseValue.getId() + " value " + glucoseValue.getValue() + " quality " + glucoseValue.getDataQuality());
+            }
+        } else {
+            Log.e(TAG,"getAlgorithmResults.getHistoricGlucose() returned null");
+        }
 
         return data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue();
 

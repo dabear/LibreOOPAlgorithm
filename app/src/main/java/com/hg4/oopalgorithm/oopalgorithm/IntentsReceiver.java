@@ -61,7 +61,7 @@ public class IntentsReceiver extends BroadcastReceiver {
         }
 
 
-        int sgv = AlgorithmRunner.RunAlgorithm(context, packet);
+        int sgv = AlgorithmRunner.RunAlgorithm(context, packet, oldState);
         Log.i(TAG,"RunAlgorithm returned " + sgv);
         if(sgv > 0) {
             BroadcastBack(context, sgv, timestamp);

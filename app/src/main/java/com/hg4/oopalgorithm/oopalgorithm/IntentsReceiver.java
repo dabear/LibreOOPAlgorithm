@@ -8,7 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.AlgorithmRunner;
+import com.hg4.oopalgorithm.oopalgorithm.AlgorithmRunner;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.AlgorithmRunner;
-import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingNative;
 
 import java.io.File;
 

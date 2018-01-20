@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 public class AlgorithmRunner {
 
-    static public int RunAlgorithm(Context context, byte[] packet, byte[] oldState) {
+    static public OOPResults RunAlgorithm(Context context, byte[] packet, byte[] oldState) {
         DataProcessingNative data_processing_native= new DataProcessingNative(1095774808 /*DataProcessingType.APOLLO_PG2*/);
 
         MyContextWrapper my_context_wrapper = new MyContextWrapper(context);
@@ -34,7 +34,8 @@ public class AlgorithmRunner {
 
         Log.e(TAG,"data_processing_native.isPatchSupported11 returned " + bret);
         if(!bret) {
-            return -1;
+            Log.e(TAG,"gson:");
+            return new OOPResults(-1, null);
         }
 
         AlarmConfiguration alarm_configuration = new AlarmConfiguration(70, 180);
@@ -56,24 +57,32 @@ public class AlgorithmRunner {
             data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, packet, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset, oldState);
         } catch (DataProcessingException e) {
             Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
-            return -2; //
+            Log.e(TAG,"gson:");
+            return new OOPResults(-2, null);
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs);
         if(data_processing_outputs == null) {
             Log.e(TAG,"data_processing_native.processScan returned null");
-            return -3; //
+            Log.e(TAG,"gson:");
+            return new OOPResults(-3, null);
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());
+
+        OOPResults OOPResults = new OOPResults( data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
+                                                data_processing_outputs.getAlgorithmResults().getTrendArrow());
 
         if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {
             for(GlucoseValue glucoseValue : data_processing_outputs.getAlgorithmResults().getHistoricGlucose()) {
                 Log.e(TAG, "  id " + glucoseValue.getId() + " value " + glucoseValue.getValue() + " quality " + glucoseValue.getDataQuality());
             }
+            OOPResults.setHistoricBg(data_processing_outputs.getAlgorithmResults().getHistoricGlucose());
         } else {
             Log.e(TAG,"getAlgorithmResults.getHistoricGlucose() returned null");
+            Log.e(TAG,"gson:");
         }
+        Log.e(TAG,"gson:"+OOPResults.toGson());
 
-        return data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue();
+        return OOPResults;
 
     }
 

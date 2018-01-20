@@ -3,6 +3,8 @@ A framework for testing and implementing algorithms for libre.
 
 ## TLDR: To create the apk, please do the following:
 
+Make sure that your pc has android studio instaled. follow the movie at https://developer.android.com/studio/install.html for instructions on how to install android studio. <br/>
+
 git clone https://github.com/tzachi-dar/LibreOOPAlgorithm.git<br/>
 cd LibreOOPAlgorithm<br/>
 scripts\create_apk.cmd<br/>

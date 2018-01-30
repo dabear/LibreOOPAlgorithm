@@ -91,7 +91,7 @@ def WriteTxtFile(text_file, data, watchTime, json):
         glucoseLevel = getGlucose(data[(i * 6 + 125)], data[i * 6 + 124]);
         
         print('index', i, file=text_file )
-        PrintBytesAsHex(data[i * 6 + 28 : (i + 1) * 6 + 28], text_file)
+        PrintBytesAsHex(data[i * 6 + 124 : (i + 1) * 6 + 124], text_file)
 
         time = max(0, abs((sensorTime - 3) / 15) * 15 - index * 15);
         print ('glucoseLevel = ', glucoseLevel, 'time = ', time, file=text_file)
@@ -215,14 +215,40 @@ def CheckCRC16(data, start, size):
     if crc == (data[start+1] * 256 + data[start]) : 
         return True
     return False
+
+
+def CreateFakeFile(base_file_name, fake_data):
+    newFile = open(base_file_name, "rb")
+    data = newFile.read(344)
+    print('data read from file', data)
+    data_arr = bytearray(data)
+    for i in range (0,6):
+        data_arr[28+i] = fake_data[i]
+    crc = computeCRC16(data_arr, 24, 296)
+    print('new crc',crc, data_arr[24], data_arr[25])
+    data_arr[24] = crc & 255
+    data_arr[25] = crc >> 8
+    data = bytes(data_arr)
+    WriteBinFile(base_file_name+'.try', data)
     
-json.loads('{\"result\": \"No data\"}') 
+    
+    # Create the text file
+        
+    json = getAlgorithmResult(base_file_name+'.try')
+        
+    file_name = base_file_name + '.txt'
+    with open(file_name, "w") as text_file:
+        WriteTxtFile(text_file, data, 13_13_13, json)
+    
+    
 if len(sys.argv) != 2:
     print ("Need to supply DB file Name")
     print('a\r\n') 
     sys.exit()
 
 file_name = sys.argv[1]
+#CreateFakeFile(file_name, [1,2,3,4,5,6])
 ReadxDripDb(file_name)
+
 
 

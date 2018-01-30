@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 public class AlgorithmRunner {
 
-    static public OOPResults RunAlgorithm(Context context, byte[] packet, byte[] oldState) {
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, byte[] oldState) {
         DataProcessingNative data_processing_native= new DataProcessingNative(1095774808 /*DataProcessingType.APOLLO_PG2*/);
 
         MyContextWrapper my_context_wrapper = new MyContextWrapper(context);
@@ -35,7 +35,7 @@ public class AlgorithmRunner {
         Log.e(TAG,"data_processing_native.isPatchSupported11 returned " + bret);
         if(!bret) {
             Log.e(TAG,"gson:");
-            return new OOPResults(-1, null);
+            return new OOPResults(timestamp,-1, 0, null);
         }
 
         AlarmConfiguration alarm_configuration = new AlarmConfiguration(70, 180);
@@ -58,17 +58,18 @@ public class AlgorithmRunner {
         } catch (DataProcessingException e) {
             Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
             Log.e(TAG,"gson:");
-            return new OOPResults(-2, null);
+            return new OOPResults(timestamp, -2, 0, null);
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs);
         if(data_processing_outputs == null) {
             Log.e(TAG,"data_processing_native.processScan returned null");
             Log.e(TAG,"gson:");
-            return new OOPResults(-3, null);
+            return new OOPResults(timestamp,-3, 0, null);
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());
 
-        OOPResults OOPResults = new OOPResults( data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
+        OOPResults OOPResults = new OOPResults(timestamp,  data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
+                data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getId(),
                                                 data_processing_outputs.getAlgorithmResults().getTrendArrow());
 
         if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {

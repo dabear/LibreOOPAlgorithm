@@ -61,26 +61,36 @@ public class IntentsReceiver extends BroadcastReceiver {
         }
 
 
-        int sgv = AlgorithmRunner.RunAlgorithm(context, packet, oldState).currentBg;
+
+        OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, oldState);
+        double sgv = oOPResults.currentBg;
         Log.i(TAG,"RunAlgorithm returned " + sgv);
         if(sgv > 0) {
-            BroadcastBack(context, sgv, timestamp);
+            BroadcastBack(context, oOPResults, timestamp);
         }
 
     }
 
-    void BroadcastBack(Context context, int sgv, long timestamp) {
+    void BroadcastBack(Context context, OOPResults oOPResults, long timestamp) {
         // Broadcast the data back to xDrip.
         JSONObject jo = new JSONObject();
         try {
             jo.put("type", "sgv");
-            jo.put("sgv", sgv);
+            jo.put("sgv", oOPResults.currentBg);
             jo.put("date", timestamp);
         }catch (JSONException e) {
-            Log.i(TAG,"JSONException: Exception cought in jo.put " + e);
+            Log.e(TAG,"JSONException: Exception cought in jo.put " + e);
+            return;
         }
 
         JSONArray ja = new JSONArray();
+        ja.put(jo);
+        try {
+            jo = new JSONObject(oOPResults.toGson());
+        } catch(org.json.JSONException e) {
+            Log.e(TAG,"JSONException: Exception cought in jo.put " + e);
+            // Since we have a fallback above we continue
+        }
         ja.put(jo);
 
         Intent intent = new Intent(Constants.XDRIP_PLUS_NS_EMULATOR);

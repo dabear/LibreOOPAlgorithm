@@ -16,20 +16,26 @@ class HistoricBg {
         bg = historicGlucose.getValue();
     }
 
-    int quality;
-    int time;
-    int bg;
+    public int quality;
+    public int time;
+    public double bg;
 }
 
 public class OOPResults {
-    int currentBg;
+    double currentBg;
+    int currentTime;
     int currenTrend;
     HistoricBg [] historicBg;
+    long timestamp;
+    String serialNumber;
 
-    OOPResults(int currentBg, TrendArrow currenTrend) {
+    OOPResults(long timestamp, int currentBg, int currentTime TrendArrow currenTrend) {
 
         this.currentBg = currentBg;
         this.currenTrend = 0;// Translate currenTrend TODO:
+        this.timestamp = timestamp;
+        this.currentTime = currentTime;
+        serialNumber="";
    }
     void setHistoricBg(final List<GlucoseValue> historicGlucose) {
         if(historicGlucose == null) {
@@ -44,5 +50,12 @@ public class OOPResults {
     String toGson() {
         Gson gson = new GsonBuilder().create();
         return gson.toJson(this);
+    }
+
+    static public void HandleData(String oopData) {
+        //Log.i(TAG, "HandleData called with " + oopData);
+        final Gson gson = new GsonBuilder().create();
+        final OOPResults oOPResults = gson.fromJson(oopData, OOPResults.class);
+
     }
 }

@@ -4,17 +4,12 @@ package com.hg4.oopalgorithm.oopalgorithm;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-
-import com.hg4.oopalgorithm.oopalgorithm.AlgorithmRunner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
 
 class Constants {
     static public final String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
@@ -86,7 +81,10 @@ public class IntentsReceiver extends BroadcastReceiver {
         JSONArray ja = new JSONArray();
         ja.put(jo);
         try {
-            jo = new JSONObject(oOPResults.toGson());
+            OOPResultsContainer OOPResultsContainer = new OOPResultsContainer();
+            OOPResultsContainer.oOPResultsArray = new OOPResults[1];
+            OOPResultsContainer.oOPResultsArray[0] = oOPResults;
+            jo = new JSONObject(OOPResultsContainer.toGson());
         } catch(org.json.JSONException e) {
             Log.e(TAG,"JSONException: Exception cought in jo.put " + e);
             // Since we have a fallback above we continue

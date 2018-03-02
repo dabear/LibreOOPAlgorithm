@@ -29,7 +29,7 @@ function download-start-page() {
 }
 
 function get-download-location(){
-  cat $apkPureLocalPage|grep 'id="download_link"'| grep '">click' | sed -E 's/.*href="(.*?)".*/\1/'
+  cat $apkPureLocalPage|grep 'id="download_link"'| grep '">click' | sed -E 's/.*href="(.*)".*/\1/'
 }
 
 function download-apk(){

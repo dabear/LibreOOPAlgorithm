@@ -14,15 +14,6 @@ function do-sha1-check {
 }
 export -f do-sha1-check
 
-function download-librelink {
-  wget -O "$1" "https://download.apkpure.com/b/apk/Y29tLmxpYnJlbGluay5hcHBfMTA2NTdfNzlkZGIyZDc?_fn=TGlicmVMaW5rX3YxLjMuMi40X2Fwa3B1cmUuY29tLmFwaw%3D%3D&k=322c052d0f9c34b28c1f67bc88de53c15a0fe122&as=2f14426570424edf58d775b630faf2645a0d3e9a&_p=Y29tLmxpYnJlbGluay5hcHA%3D&c=1%7CMEDICAL"
-  sha1sum=$(do-sha1-check "$1" |awk  '{print $1}')
-  if [ "$sha1sum" == "56baf72651def0e562590b406893e4f0e315b1cf" ] ; then
-    return 0
-  else
-    return -1
-  fi
-}
 
 function find-local-librelink {
   find $HOME -type f -not -path '*/\.*' -name '*.apk' -exec bash -c 'do-sha1-check "{}"' \; | grep '^56baf72651def0e562590b406893e4f0e315b1cf' | awk '{print $2}'
@@ -42,23 +33,13 @@ trap finish EXIT
 
 
 jarsigner &> /dev/null || doexit "'jarsigner' command not found"
-wget --help &> /dev/null || doexit "'wget' command not found"
-
 
 mkdir -p "$bdir/LibreLink/apk"
 
 
 apk=$(find-local-librelink)
 if [ "x${#apk}" == "x0" ] ; then
-    echo "Could not find librelink in $HOME, trying to download from remote server"
-    #not found, trying to redownload
-    apk="$HOME/LibreLink_v1.3.2.4.apk"
-    download-librelink "$apk"
-    
-    if [ $? -ne 0 ]; then
-      doexit "Could not find local LibreLink apk in $HOME. Download of librelink with sha1sum 56baf72651def0e562590b406893e4f0e315b1cf also failed!"
-
-    fi
+  doexit "Could not find local LibreLink apk in $HOME. Please manually download LibreLink_v1.3.2.4_apkpure.com.apk with sha1sum 56baf72651def0e562590b406893e4f0e315b1cf Before continuing!"
 else
   echo  "Found local librelink on path $apk"
 fi

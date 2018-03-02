@@ -8,6 +8,24 @@
     tools:context="com.hg4.oopalgorithm.oopalgorithm.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:android1="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="version"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_centerHorizontal="true"
+        android:textSize="15sp"/>
+
     <TextView
         android:id="@+id/sample_text"
         android:layout_width="wrap_content"
@@ -16,6 +34,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_below="@+id/version"
+        android:layout_centerHorizontal="true"
+        android:textSize="30sp"/>
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

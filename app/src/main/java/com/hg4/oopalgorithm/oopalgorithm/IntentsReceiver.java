@@ -4,17 +4,12 @@ package com.hg4.oopalgorithm.oopalgorithm;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-
-import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.AlgorithmRunner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
 
 class Constants {
     static public final String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
@@ -24,7 +19,7 @@ class Constants {
 }
 
 public class IntentsReceiver extends BroadcastReceiver {
-    static final  String TAG = "Xposed";
+    static final  String TAG = "OOPAlgorithm";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -61,30 +56,39 @@ public class IntentsReceiver extends BroadcastReceiver {
         }
 
 
-        int sgv = AlgorithmRunner.RunAlgorithm(context, packet);
+
+        OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, oldState);
+        double sgv = oOPResults.currentBg;
         Log.i(TAG,"RunAlgorithm returned " + sgv);
-        BroadcastBack(context, sgv, timestamp);
+        if(sgv > 0) {
+            BroadcastBack(context, oOPResults, timestamp);
+        }
 
     }
 
-    static void RegisterReceiver(Context appContext) {
-        IntentFilter filter = new IntentFilter(Constants.XDRIP_PLUS_LIBRE_DATA);
-        IntentsReceiver receiver = new IntentsReceiver();
-        appContext.registerReceiver(receiver, filter);
-    }
-
-    void BroadcastBack(Context context, int sgv, long timestamp) {
+    void BroadcastBack(Context context, OOPResults oOPResults, long timestamp) {
         // Broadcast the data back to xDrip.
         JSONObject jo = new JSONObject();
         try {
             jo.put("type", "sgv");
-            jo.put("sgv", sgv);
+            jo.put("sgv", oOPResults.currentBg);
             jo.put("date", timestamp);
         }catch (JSONException e) {
-            Log.i(TAG,"JSONException: Exception cought in jo.put " + e);
+            Log.e(TAG,"JSONException: Exception cought in jo.put " + e);
+            return;
         }
 
         JSONArray ja = new JSONArray();
+        ja.put(jo);
+        try {
+            OOPResultsContainer OOPResultsContainer = new OOPResultsContainer();
+            OOPResultsContainer.oOPResultsArray = new OOPResults[1];
+            OOPResultsContainer.oOPResultsArray[0] = oOPResults;
+            jo = new JSONObject(OOPResultsContainer.toGson());
+        } catch(org.json.JSONException e) {
+            Log.e(TAG,"JSONException: Exception cought in jo.put " + e);
+            // Since we have a fallback above we continue
+        }
         ja.put(jo);
 
         Intent intent = new Intent(Constants.XDRIP_PLUS_NS_EMULATOR);

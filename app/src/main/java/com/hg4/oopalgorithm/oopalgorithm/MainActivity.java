@@ -1,6 +1,8 @@
 package com.hg4.oopalgorithm.oopalgorithm;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,16 +12,25 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.AlgorithmRunner;
-import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingNative;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Used to load the 'native-lib' library on application startup.
-    //static {
-    //    System.loadLibrary("DataProcessing");
-    //}
+    static final  String TAG = "OOPAlgorithm";
 
+    void SetVersion() {
+        TextView version = (TextView) findViewById(R.id.version);
+        String versionName;
+        try {
+            versionName = "version " + getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA).versionName;
+            versionName += "\nBuilt on: "+BuildConfig.buildVersion;
+            version.setText(versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            //e.printStackTrace();
+            Log.e(TAG,"PackageManager.NameNotFoundException:" + e.getMessage());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        SetVersion();
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
+        */
         // Example of a call to a native method
         TextView tv = (TextView) findViewById(R.id.sample_text);
+
         byte[] packet = {(byte)0x3a, (byte)0xcf, (byte)0x10, (byte)0x16, (byte)0x03, (byte)0x00, (byte)0x00, (byte)0x00,
                 (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
                 (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
@@ -85,13 +99,16 @@ public class MainActivity extends AppCompatActivity {
                 (byte)0x14, (byte)0x07, (byte)0x96, (byte)0x80, (byte)0x5a, (byte)0x00, (byte)0xed, (byte)0xa6,
                 (byte)0x0e, (byte)0x6e, (byte)0x1a, (byte)0xc8, (byte)0x04, (byte)0xdd, (byte)0x58, (byte)0x6d};
 
-        int sgv = AlgorithmRunner.RunAlgorithm(getApplicationContext(), packet);
-        IntentsReceiver.RegisterReceiver(getApplicationContext());
+        int sgv = (int) AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), packet, null).currentBg;
 
         if(sgv == 63) {
             tv.setText("Algorithm worked correctly");
         } else {
-            tv.setText("Algorithm returned " + sgv);
+            String ApkName = AlgorithmRunner.getPackageCodePathNoCreate(getApplicationContext());
+            File f = new File(ApkName);
+            tv.setText("Algorithm returned " + sgv + " apk file size " + f.length());
+            Log.e(TAG, "Deleting file due to apk failure" + ApkName);
+            f.delete();
         }
     }
 

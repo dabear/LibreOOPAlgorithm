@@ -8,14 +8,9 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-function do-sha1-check {
-  shasum "$1" 2>/dev/null || sha1sum "$1"
-}
-export -f do-sha1-check
-
 
 function find-local-librelink {
-  find $HOME -type f -not -path '*/\.*' -name '*.apk' -exec bash -c 'do-sha1-check "{}"' \; | grep '^56baf72651def0e562590b406893e4f0e315b1cf' | awk '{print $2}'| head -1 
+  find $HOME -type f -not -path '*/\.*' -iname 'librelink*.apk' -size +12M | head -1
   
 }
 

@@ -15,7 +15,7 @@ export -f do-sha1-check
 
 
 function find-local-librelink {
-  find $HOME -type f -not -path '*/\.*' -name '*.apk' -exec bash -c 'do-sha1-check "{}"' \; | grep '^56baf72651def0e562590b406893e4f0e315b1cf' | awk '{print $2}'
+  find $HOME -type f -not -path '*/\.*' -name '*.apk' -exec bash -c 'do-sha1-check "{}"' \; | grep '^56baf72651def0e562590b406893e4f0e315b1cf' | awk '{print $2}'| head -1 
   
 }
 
@@ -36,7 +36,7 @@ jarsigner &> /dev/null || doexit "'jarsigner' command not found"
 mkdir -p "$bdir/LibreLink/apk"
 
 
-apk=$(find-local-librelink)
+apk=$(find-local-librelink 2> /dev/null)
 if [ "x${#apk}" == "x0" ] ; then
   doexit "Could not find local LibreLink apk in $HOME. Please manually download LibreLink_v1.3.2.4_apkpure.com.apk with sha1sum 56baf72651def0e562590b406893e4f0e315b1cf Before continuing!"
 else
@@ -54,7 +54,7 @@ mkdir -p "$bdir/temp/dir/lib/"{arm64-v8a,armeabi,armeabi-v7a,"x86"}
 
 mkdir -p "$bdir/temp/dir/res/raw/"
 cp "apk/app-debug.apk" "$bdir/temp/"
-uzip  "$bdir/temp/app-debug.apk" -d "$bdir/temp/dir"
+unzip  "$bdir/temp/app-debug.apk" -d "$bdir/temp/dir"
 rm -rf "$bdir/temp/dir/META-INF"
 
   

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 #
-#Requirements:
+# Requirements:
 # 1) download jdk first to make sure the "jarsigner" command  is available
 # 1b) on ubuntu: see https://launchpad.net/~webupd8team/+archive/ubuntu/java
-# 2) Make sure wget command is installed. On mac, you can install homebrew then do "brew install wget"
-#
+
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
@@ -55,7 +54,7 @@ mkdir -p "$bdir/temp/dir/lib/"{arm64-v8a,armeabi,armeabi-v7a,"x86"}
 
 mkdir -p "$bdir/temp/dir/res/raw/"
 cp "apk/app-debug.apk" "$bdir/temp/"
-unzip  "$bdir/temp/app-debug.apk" -d "$bdir/temp/dir"
+uzip  "$bdir/temp/app-debug.apk" -d "$bdir/temp/dir"
 rm -rf "$bdir/temp/dir/META-INF"
 
   

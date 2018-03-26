@@ -10,10 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.preference.PreferenceManager;
-<<<<<<< HEAD
-
-=======
->>>>>>> remote fetch process and upload
 import android.os.Handler;
 import android.util.Base64;
 import android.util.Log;
@@ -42,10 +38,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-<<<<<<< HEAD
 import java.io.OutputStreamWriter;
-=======
->>>>>>> remote fetch process and upload
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -56,12 +49,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-<<<<<<< HEAD
 
 import no.bjorninge.LibreReading.LibreReading;
 
-=======
->>>>>>> remote fetch process and upload
 public class MainActivity extends AppCompatActivity {
 
     static final  String TAG = "xOOPAlgorithm";
@@ -74,20 +64,14 @@ public class MainActivity extends AppCompatActivity {
     // This is a compile time option to enable the remote fetch of raw libre readings.
     // These readings will be downloaded from /api/FetchPendingRequests,
     // processed and uploaded to the libre oop site /api/UploadResults endpoint
-<<<<<<< HEAD
     private final Boolean LIBRE_OOP_WEB_ENABLE = true;
-=======
-    private final Boolean LIBRE_OOP_WEB_ENABLE = false;
->>>>>>> remote fetch process and upload
 
     //the processing token will be given to you by the admin of the libre oop website
     private final String LIBRE_OOP_WEB_PROCESSING_TOKEN="processorX-YYYYYYYYYYY";
 
-<<<<<<< HEAD
-    private final int LIBRE_OOP_WEB_INTERVAL = 30000;//milliseconds
 
-=======
->>>>>>> remote fetch process and upload
+    private final int LIBRE_OOP_WEB_INTERVAL = 35000;//milliseconds
+
     private String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -108,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return sb.toString();
     }
-<<<<<<< HEAD
     public String makePostRequest(String reqUrl, String data){
         String response = null;
 
@@ -144,9 +127,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public String makeGetCall(String reqUrl) {
-=======
-    public String makeServiceCall(String reqUrl) {
->>>>>>> remote fetch process and upload
         String response = null;
         try {
             URL url = new URL(reqUrl);
@@ -464,7 +444,7 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
 
             if(LIBRE_OOP_WEB_ENABLE) {
                 final Handler handler = new Handler();
-<<<<<<< HEAD
+
 
                 handler.postDelayed(new Runnable(){
                     public void run(){
@@ -481,18 +461,7 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                     }
                 }, LIBRE_OOP_WEB_INTERVAL);
                 //new FetchLibreRequests().execute();
-=======
-                final int delay = 21000; //milliseconds
 
-                handler.postDelayed(new Runnable(){
-                    public void run(){
-                        new FetchLibreRequests().execute();
-                        //do something
-                        handler.postDelayed(this, delay);
-                    }
-                }, delay);
-                new FetchLibreRequests().execute();
->>>>>>> remote fetch process and upload
             }
 
 
@@ -533,7 +502,6 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                     "/api/FetchPendingRequests?processing_accesstoken=" +
                     LIBRE_OOP_WEB_PROCESSING_TOKEN;
 
-<<<<<<< HEAD
             ArrayList<LibreReading> readouts = LibreReading.fetchForProcessing(fetchUrl);
 
             if (readouts == null) {
@@ -621,110 +589,6 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
         }
 
 
-=======
-
-            // Making a request to url and getting response
-            String jsonStr = makeServiceCall(fetchUrl);
-            ArrayList<HashMap<String, String>> readRequests = new ArrayList<>();
-
-            Log.e(TAG, "Response from url: " + jsonStr);
-
-            if (jsonStr != null) {
-                try {
-
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-
-
-                    Boolean isError = jsonObj.getBoolean("Error");
-
-                    this.showmsg("iserror:" +  (isError ? "true" : "false"));
-
-                    if(isError) {
-                        return null;
-                    }
-
-                    // Getting JSON Array node
-                    JSONArray reqs = jsonObj.getJSONArray("Result");
-
-                    // looping through All Contacts
-                    for (int i = 0; i < reqs.length(); i++) {
-                        JSONObject c = reqs.getJSONObject(i);
-
-                        String id = c.getString("uuid");
-
-                        String patch = c.getString("b64contents");
-
-
-
-                        // tmp hash map for single contact
-                        HashMap<String, String> reading = new HashMap<>();
-
-                        // adding each child node to HashMap key => value
-                        reading.put("id", id);
-                        reading.put("patch", patch);
-
-
-                        // adding contact to contact list
-                        readRequests.add(reading);
-                    }
-                } catch (final JSONException e) {
-                    this.showmsg("Json parsing error: " + e.getMessage());
-
-
-                }
-
-                this.showmsg("read requests (" + readRequests.size() + "): ");
-                for (HashMap<String, String> temp : readRequests) {
-
-                    this.showmsg("id: " +temp.get("id"));
-                    this.showmsg("patch " +temp.get("patch"));
-
-                    byte[] decoded;
-                    try {
-                        decoded = Base64.decode(temp.get("patch"), Base64.DEFAULT);
-                        this.showmsg("patch decoded:" + Arrays.toString(decoded));
-                    } catch(IllegalArgumentException ex) {
-                        this.showmsg("patch decoded unsuccessfully");
-                        continue;
-                    }
-
-                    String result = "";
-                    try{
-                        int sgv = (int) AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, null).currentBg;
-                        result = "currentBg: " + String.valueOf(sgv);
-                    } catch(Exception ex){
-                        result = "Exception: " + ex.getMessage();
-                    }
-                    String uploadUrl = LIBRE_OOP_WEBSITE + "/api/UploadResults?"+
-                            "processing_accesstoken=" + LIBRE_OOP_WEB_PROCESSING_TOKEN + "&uuid=" +
-                            this.urlEncode(temp.get("id")) + "&result=" +
-                            this.urlEncode("some value from android: " + result );
-
-
-                    this.showmsg("Would be calling url:" + uploadUrl);
-
-                    // TODO: this should really really really be an HTTP POST call
-                    // However, I had some problems getting post to work,
-                    // so leave it HTTP Get for now
-                    String jsonStr2 = makeServiceCall(uploadUrl);
-                    this.showmsg("response after upload: " + jsonStr2);
-                }
-
-            } else {
-                this.showmsg("Could not get json from server");
-
-            }
-
-            return null;
-        }
-        public String urlEncode(String source) {
-            try {
-                return URLEncoder.encode(source, "UTF-8");
-            } catch (Exception e) {
-                return "encoding-exception";
-            }
-        }
->>>>>>> remote fetch process and upload
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);

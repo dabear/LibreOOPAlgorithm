@@ -39,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     //the processing token will be given to you by the admin of the libre oop website
     private final String LIBRE_OOP_WEB_PROCESSING_TOKEN="processorX-YYYYYYYYYYY";
 
-    private final int LIBRE_OOP_WEB_INTERVAL = 35000;//milliseconds
+    private final int LIBRE_OOP_WEB_INTERVAL = 30000;//milliseconds
 
     private String convertStreamToString(InputStream is) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -88,7 +89,41 @@ public class MainActivity extends AppCompatActivity {
         }
         return sb.toString();
     }
-    public String makeServiceCall(String reqUrl) {
+    public String makePostRequest(String reqUrl, String data){
+        String response = null;
+
+
+        try{
+            URL url = new URL(reqUrl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty( "charset", "utf-8");
+            conn.setRequestProperty( "Content-Length", Integer.toString( data.length() ));
+
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+            wr.write(data);
+            wr.flush();
+            // read the response
+            InputStream in = new BufferedInputStream(conn.getInputStream());
+            response = convertStreamToString(in);
+
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "MalformedURLException: " + e.getMessage());
+        } catch (ProtocolException e) {
+            Log.e(TAG, "ProtocolException: " + e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, "IOException: " + e.getMessage());
+        } catch (Exception e) {
+            Log.e(TAG, "Exception: " + e.getMessage());
+        }
+
+        return response;
+
+    }
+    public String makeGetCall(String reqUrl) {
         String response = null;
         try {
             URL url = new URL(reqUrl);
@@ -409,12 +444,19 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
 
                 handler.postDelayed(new Runnable(){
                     public void run(){
-                        new FetchLibreRequests().execute();
+
+                        try {
+                            new FetchLibreRequests().execute();
+                            Thread.sleep(9000);
+                        } catch (InterruptedException ex){
+
+                        }
                         //do something
                         handler.postDelayed(this, LIBRE_OOP_WEB_INTERVAL);
+
                     }
                 }, LIBRE_OOP_WEB_INTERVAL);
-                new FetchLibreRequests().execute();
+                //new FetchLibreRequests().execute();
             }
 
 
@@ -457,7 +499,7 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
 
 
             // Making a request to url and getting response
-            String jsonStr = makeServiceCall(fetchUrl);
+            String jsonStr = makeGetCall(fetchUrl);
             ArrayList<HashMap<String, String>> readRequests = new ArrayList<>();
 
             Log.e(TAG, "Response from url: " + jsonStr);
@@ -521,25 +563,27 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                         continue;
                     }
 
-                    String result = "";
+                    String algoResults = "";
                     try{
-                        int sgv = (int) AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, null).currentBg;
-                        result = "currentBg: " + String.valueOf(sgv);
-                    } catch(Exception ex){
-                        result = "Exception: " + ex.getMessage();
-                    }
-                    String uploadUrl = LIBRE_OOP_WEBSITE + "/api/UploadResults?"+
-                            "processing_accesstoken=" + LIBRE_OOP_WEB_PROCESSING_TOKEN + "&uuid=" +
-                            this.urlEncode(temp.get("id")) + "&result=" +
-                            this.urlEncode("some value from android: " + result );
 
+                        OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, null);
+                        int sgv = (int) results.currentBg;
+
+                        String json  = results.toGson();
+                        algoResults = "currentBg: " + String.valueOf(sgv) + " FullAlgoResults: " + json;
+                    } catch(Exception ex){
+                        algoResults = "Exception: " + ex.getMessage();
+                    }
+                    //String uploadUrl = LIBRE_OOP_WEBSITE + "/api/UploadResults?"+
+
+                    String uploadUrl = LIBRE_OOP_WEBSITE  + "/api/UploadResults";
+                    String data = "processing_accesstoken=" + LIBRE_OOP_WEB_PROCESSING_TOKEN + "&uuid=" +
+                            this.urlEncode(temp.get("id")) + "&result=" +
+                            this.urlEncode("some value from android: " + algoResults);
 
                     this.showmsg("Would be calling url:" + uploadUrl);
 
-                    // TODO: this should really really really be an HTTP POST call
-                    // However, I had some problems getting post to work,
-                    // so leave it HTTP Get for now
-                    String jsonStr2 = makeServiceCall(uploadUrl);
+                    String jsonStr2 = makePostRequest(uploadUrl, data);
                     this.showmsg("response after upload: " + jsonStr2);
                 }
 

@@ -461,7 +461,6 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                     }
                 }, LIBRE_OOP_WEB_INTERVAL);
                 //new FetchLibreRequests().execute();
-
             }
 
 

@@ -11,6 +11,7 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.NonActionabl
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingNative;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingOutputs;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingException;
+import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingType;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.GlucoseValue;
 
 import java.io.File;
@@ -22,7 +23,14 @@ import java.util.Arrays;
 
 public class AlgorithmRunner {
 
-    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, byte[] oldState) {
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, byte[] oldState){
+        int sensorStartTimestamp=0x0e181349;
+        int sensorScanTimestamp=0x0e1c4794;
+        int currentUtcOffset = 0x0036ee80;
+        return RunAlgorithm(timestamp, context, packet, oldState, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
+
+    }
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, byte[] oldState, int sensorStartTimestamp, int sensorScanTimestamp, int currentUtcOffset) {
         DataProcessingNative data_processing_native= new DataProcessingNative(1095774808 /*DataProcessingType.APOLLO_PG2*/);
 
         MyContextWrapper my_context_wrapper = new MyContextWrapper(context);
@@ -30,6 +38,8 @@ public class AlgorithmRunner {
         data_processing_native.initialize(my_context_wrapper);
         byte[] bDat = {(byte)0xdf, 0x00, 0x00, 0x01, 01, 02};
         boolean bret = data_processing_native.isPatchSupported(bDat , ApplicationRegion.LEVEL_1);
+
+
 
         Log.e(TAG,"data_processing_native.isPatchSupported11 returned " + bret);
         if(!bret) {
@@ -40,9 +50,9 @@ public class AlgorithmRunner {
         AlarmConfiguration alarm_configuration = new AlarmConfiguration(70, 180);
         NonActionableConfiguration non_actionable_configuration = new NonActionableConfiguration (true, true, 0, 40, 500, -2, 2);
 
-        int sensorStartTimestamp = 0x0e181349;
-        int sensorScanTimestamp = 0x0e1c4794;
-        int currentUtcOffset = 0x0036ee80;
+        //int sensorStartTimestamp = 0x0e181349;
+        //int sensorScanTimestamp = 0x0e1c4794;
+        //int currentUtcOffset = 0x0036ee80;
         if(oldState == null) {
             byte[]oldState1 = {(byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -54,6 +64,7 @@ public class AlgorithmRunner {
         DataProcessingOutputs data_processing_outputs = null;
         try {
             data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, packet, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset, oldState);
+
         } catch (DataProcessingException e) {
             Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
             Log.e(TAG,"gson:");
@@ -67,10 +78,11 @@ public class AlgorithmRunner {
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());
 
+
         OOPResults OOPResults = new OOPResults(timestamp,  data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
                 data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getId(),
                                                 data_processing_outputs.getAlgorithmResults().getTrendArrow());
-
+        ///byte[] newState = data_processing_outputs.getNewState()
         if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {
             for(GlucoseValue glucoseValue : data_processing_outputs.getAlgorithmResults().getHistoricGlucose()) {
                 Log.e(TAG, "  id " + glucoseValue.getId() + " value " + glucoseValue.getValue() + " quality " + glucoseValue.getDataQuality());

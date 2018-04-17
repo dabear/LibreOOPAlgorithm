@@ -340,8 +340,14 @@ public class MainActivity extends AppCompatActivity {
                     String algoResults = "";
                     try{
 
-                        OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, null);
+                        int sensorStartTimestamp=0x0e181349;
+                        int sensorScanTimestamp=0x0e1c4794;
+                        int currentUtcOffset = 0x0036ee80;
+                        byte[] oldState = null;
+
+                        OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
                         int sgv = (int) results.currentBg;
+
 
                         String json  = results.toGson();
                         algoResults = "currentBg: " + String.valueOf(sgv) + " FullAlgoResults: " + json;

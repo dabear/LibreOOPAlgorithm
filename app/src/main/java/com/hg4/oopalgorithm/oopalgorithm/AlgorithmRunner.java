@@ -12,6 +12,7 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessi
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingOutputs;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingResult;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingException;
+import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingType;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.GlucoseValue;
 import com.no.bjorninge.librestate.LibreState;
 
@@ -24,9 +25,14 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.AttenuationC
 
 public class AlgorithmRunner {
 
-    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet,  byte[] patchUid, byte[] patchInfo, boolean usedefaultstatealways, String sensorid) {
-        byte oldState[];
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, byte[] oldState){
+        int sensorStartTimestamp=0x0e181349;
+        int sensorScanTimestamp=0x0e1c4794;
+        int currentUtcOffset = 0x0036ee80;
+        return RunAlgorithm(timestamp, context, packet, oldState, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
 
+    }
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet,  byte[] patchUid, byte[] patchInfo, boolean usedefaultstatealways, String sensorid) {
         DataProcessingNative data_processing_native= new DataProcessingNative(1095774808 /*DataProcessingType.APOLLO_PG2*/);
 
         MyContextWrapper my_context_wrapper = new MyContextWrapper(context);
@@ -107,10 +113,11 @@ public class AlgorithmRunner {
             LibreState.saveSensorState(sensorid, newState, context);
         }
 
+
         OOPResults OOPResults = new OOPResults(timestamp,  data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
                 data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getId(),
                                                 data_processing_outputs.getAlgorithmResults().getTrendArrow());
-
+        ///byte[] newState = data_processing_outputs.getNewState()
         if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {
             for(GlucoseValue glucoseValue : data_processing_outputs.getAlgorithmResults().getHistoricGlucose()) {
                 Log.e(TAG, "  id " + glucoseValue.getId() + " value " + glucoseValue.getValue() + " quality " + glucoseValue.getDataQuality());

@@ -577,44 +577,6 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                     reading.algoResult = "Exception: " + ex.getMessage();
                 }
 
-                this.showmsg("read requests (" + readRequests.size() + "): ");
-                for (HashMap<String, String> temp : readRequests) {
-
-                    this.showmsg("id: " +temp.get("id"));
-                    this.showmsg("patch " +temp.get("patch"));
-
-                    byte[] decoded;
-                    try {
-                        decoded = Base64.decode(temp.get("patch"), Base64.DEFAULT);
-                        this.showmsg("patch decoded:" + Arrays.toString(decoded));
-                    } catch(IllegalArgumentException ex) {
-                        this.showmsg("patch decoded unsuccessfully");
-                        continue;
-                    }
-
-                    String algoResults = "";
-                    try{
-
-                        int sensorStartTimestamp=0x0e181349;
-                        int sensorScanTimestamp=0x0e1c4794;
-                        int currentUtcOffset = 0x0036ee80;
-                        byte[] oldState = null;
-
-                        OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
-                        int sgv = (int) results.currentBg;
-
-
-                        String json  = results.toGson();
-                        algoResults = "currentBg: " + String.valueOf(sgv) + " FullAlgoResults: " + json;
-                    } catch(Exception ex){
-                        algoResults = "Exception: " + ex.getMessage();
-                    }
-                    //String uploadUrl = LIBRE_OOP_WEBSITE + "/api/UploadResults?"+
-
-                    String uploadUrl = LIBRE_OOP_WEBSITE  + "/api/UploadResults";
-                    String data = "processing_accesstoken=" + LIBRE_OOP_WEB_PROCESSING_TOKEN + "&uuid=" +
-                            this.urlEncode(temp.get("id")) + "&result=" +
-                            this.urlEncode("some value from android: " + algoResults);
 
                 LibreReading.uploadProcessedReading(uploadUrl, LIBRE_OOP_WEB_PROCESSING_TOKEN  , reading);
 

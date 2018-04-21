@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+
+import no.bjorninge.LibreReading.LibreReading;
+
 public class MainActivity extends AppCompatActivity {
 
     static final  String TAG = "OOPAlgorithm";
@@ -271,116 +274,83 @@ public class MainActivity extends AppCompatActivity {
                     "/api/FetchPendingRequests?processing_accesstoken=" +
                     LIBRE_OOP_WEB_PROCESSING_TOKEN;
 
+            ArrayList<LibreReading> readouts = LibreReading.fetchForProcessing(fetchUrl);
 
-            // Making a request to url and getting response
-            String jsonStr = makeGetCall(fetchUrl);
-            ArrayList<HashMap<String, String>> readRequests = new ArrayList<>();
 
-            Log.e(TAG, "Response from url: " + jsonStr);
+            this.showmsg("read requests (" + readouts.size() + "): ");
+            for (LibreReading reading : readouts) {
 
-            if (jsonStr != null) {
+                this.showmsg("id: " +reading.id);
+                this.showmsg("patch: " +reading.patch);
+
+                byte[] decoded;
+                byte[] oldState = null;
                 try {
-
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-
-
-                    Boolean isError = jsonObj.getBoolean("Error");
-
-                    this.showmsg("iserror:" +  (isError ? "true" : "false"));
-
-                    if(isError) {
-                        return null;
-                    }
-
-                    // Getting JSON Array node
-                    JSONArray reqs = jsonObj.getJSONArray("Result");
-
-                    // looping through All Contacts
-                    for (int i = 0; i < reqs.length(); i++) {
-                        JSONObject c = reqs.getJSONObject(i);
-
-                        String id = c.getString("uuid");
-
-                        String patch = c.getString("b64contents");
-
-
-
-                        // tmp hash map for single contact
-                        HashMap<String, String> reading = new HashMap<>();
-
-                        // adding each child node to HashMap key => value
-                        reading.put("id", id);
-                        reading.put("patch", patch);
-
-
-                        // adding contact to contact list
-                        readRequests.add(reading);
-                    }
-                } catch (final JSONException e) {
-                    this.showmsg("Json parsing error: " + e.getMessage());
-
-
+                    decoded = Base64.decode(reading.patch, Base64.DEFAULT);
+                    this.showmsg("patch decoded:" + Arrays.toString(decoded));
+                } catch(IllegalArgumentException ex) {
+                    this.showmsg("patch decoded unsuccessfully");
+                    continue;
                 }
 
-                this.showmsg("read requests (" + readRequests.size() + "): ");
-                for (HashMap<String, String> temp : readRequests) {
-
-                    this.showmsg("id: " +temp.get("id"));
-                    this.showmsg("patch " +temp.get("patch"));
-
-                    byte[] decoded;
+                //oldstate is optional, so continue even if this fails
+                if(reading.oldState != null && reading.oldState != "null") {
                     try {
-                        decoded = Base64.decode(temp.get("patch"), Base64.DEFAULT);
-                        this.showmsg("patch decoded:" + Arrays.toString(decoded));
-                    } catch(IllegalArgumentException ex) {
-                        this.showmsg("patch decoded unsuccessfully");
-                        continue;
-                    }
+                        this.showmsg("oldstate before decoding: " + reading.oldState);
+                        oldState = Base64.decode(reading.oldState, Base64.DEFAULT);
+                        this.showmsg("oldstate decoded:" + Arrays.toString(oldState));
+                    } catch (IllegalArgumentException ex) {
+                        this.showmsg("oldstate either invalid or null, continuing");
 
-                    String algoResults = "";
+                    }
+                }
+                this.showmsg("oldstate2 set to: " + oldState);
+                this.showmsg("oldstate2 decoded:" + Arrays.toString(oldState));
+
+                try{
+
+                    /*int sensorStartTimestamp=0x0e181349;
+                    int sensorScanTimestamp=0x0e1c4794;
+                    int currentUtcOffset = 0x0036ee80;*/
+
+                    int sensorStartTimestamp = reading.sensorStartTimestamp;
+                    int sensorScanTimestamp = reading.sensorScanTimestamp;
+                    int currentUtcOffset = reading.currentUtcOffset;
+
+                    showmsg("sensorStartTimestamp in algorunner: " + sensorStartTimestamp);
+                    showmsg("sensorScanTimestamp in algorunner: " + sensorScanTimestamp);
+                    showmsg("currentUtcOffset in algorunner: " + currentUtcOffset);
+
+
+                    OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
+                    int sgv = (int) results.currentBg;
+
+
+                    String json  = results.toGson();
+                    reading.algoResult = "currentBg: " + String.valueOf(sgv) + " FullAlgoResults: " + json;
                     try{
-
-                        int sensorStartTimestamp=0x0e181349;
-                        int sensorScanTimestamp=0x0e1c4794;
-                        int currentUtcOffset = 0x0036ee80;
-                        byte[] oldState = null;
-
-                        OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
-                        int sgv = (int) results.currentBg;
-
-
-                        String json  = results.toGson();
-                        algoResults = "currentBg: " + String.valueOf(sgv) + " FullAlgoResults: " + json;
-                    } catch(Exception ex){
-                        algoResults = "Exception: " + ex.getMessage();
+                        showmsg("base64encoding newState: " + Arrays.toString(results.newState));
+                        reading.newState = Base64.encodeToString(results.newState, Base64.NO_WRAP);
+                        showmsg("newState b64encoded: " + reading.newState);
+                    } catch (Exception innerex) {
+                        showmsg("newstate not encoded: " + innerex.getMessage());
                     }
-                    //String uploadUrl = LIBRE_OOP_WEBSITE + "/api/UploadResults?"+
 
-                    String uploadUrl = LIBRE_OOP_WEBSITE  + "/api/UploadResults";
-                    String data = "processing_accesstoken=" + LIBRE_OOP_WEB_PROCESSING_TOKEN + "&uuid=" +
-                            this.urlEncode(temp.get("id")) + "&result=" +
-                            this.urlEncode("some value from android: " + algoResults);
-
-                    this.showmsg("Would be calling url:" + uploadUrl);
-
-                    String jsonStr2 = makePostRequest(uploadUrl, data);
-                    this.showmsg("response after upload: " + jsonStr2);
+                } catch(Exception ex){
+                    reading.algoResult = "Exception: " + ex.getMessage();
                 }
 
-            } else {
-                this.showmsg("Could not get json from server");
+
+                String uploadUrl = LIBRE_OOP_WEBSITE  + "/api/UploadResults";
+
+                LibreReading.uploadProcessedReading(uploadUrl, LIBRE_OOP_WEB_PROCESSING_TOKEN  , reading);
+
 
             }
-
             return null;
         }
-        public String urlEncode(String source) {
-            try {
-                return URLEncoder.encode(source, "UTF-8");
-            } catch (Exception e) {
-                return "encoding-exception";
-            }
-        }
+
+
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     // This is a compile time option to enable the remote fetch of raw libre readings.
     // These readings will be downloaded from /api/FetchPendingRequests,
     // processed and uploaded to the libre oop site /api/UploadResults endpoint
-    private final Boolean LIBRE_OOP_WEB_ENABLE = false;
+    private final Boolean LIBRE_OOP_WEB_ENABLE = true;
 
     //the processing token will be given to you by the admin of the libre oop website
     private final String LIBRE_OOP_WEB_PROCESSING_TOKEN="processorX-YYYYYYYYYYY";

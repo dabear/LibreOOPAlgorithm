@@ -78,11 +78,11 @@ public class AlgorithmRunner {
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());
 
-
+        byte[] newState = data_processing_outputs.getNewState();
         OOPResults OOPResults = new OOPResults(timestamp,  data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
                 data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getId(),
-                                                data_processing_outputs.getAlgorithmResults().getTrendArrow());
-        ///byte[] newState = data_processing_outputs.getNewState()
+                                                data_processing_outputs.getAlgorithmResults().getTrendArrow(), newState );
+
         if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {
             for(GlucoseValue glucoseValue : data_processing_outputs.getAlgorithmResults().getHistoricGlucose()) {
                 Log.e(TAG, "  id " + glucoseValue.getId() + " value " + glucoseValue.getValue() + " quality " + glucoseValue.getDataQuality());

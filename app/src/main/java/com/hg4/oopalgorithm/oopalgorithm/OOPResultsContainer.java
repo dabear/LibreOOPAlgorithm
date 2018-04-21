@@ -29,12 +29,20 @@ class OOPResults {
     long timestamp;
     String serialNumber;
 
+    byte[] newState;
+
     OOPResults(long timestamp, int currentBg, int currentTime, TrendArrow currenTrend) {
+
+        this( timestamp, currentBg, currentTime, currenTrend, new byte[] {0,1,2});
+    }
+
+    OOPResults(long timestamp, int currentBg, int currentTime, TrendArrow currenTrend, byte[] newState) {
 
         this.currentBg = currentBg;
         this.currentTrend = 0;// Translate currenTrend TODO:
         this.timestamp = timestamp;
         this.currentTime = currentTime;
+        this.newState = newState;
         serialNumber="";
    }
     void setHistoricBg(final List<GlucoseValue> historicGlucose) {

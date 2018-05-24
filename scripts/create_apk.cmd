@@ -50,6 +50,6 @@ cd ..\..
 move temp\dir\apk.aunaligned.zip temp
 
 "C:\Program Files\Android\Android Studio\jre\bin\jarsigner.exe"  -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore tools\windows\debug.keystore  -storepass android  temp\apk.aunaligned.zip androiddebugkey
-move temp\apk.aunaligned.zip apk.aunaligned.apk
+move temp\apk.aunaligned.zip LibreOOPAlgorithm.apk
 
 :Exit

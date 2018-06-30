@@ -11,11 +11,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+
 class Constants {
     static public final String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     static public final String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
     static public final String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
     static public final String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
+    static public final String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
 }
 
 public class IntentsReceiver extends BroadcastReceiver {
@@ -25,17 +28,16 @@ public class IntentsReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.e(TAG,"we are inside the broadcast reciever");
 
+        String sensorid = intent.getStringExtra(Constants.LIBRE_SN);
         String packet_file = intent.getStringExtra("packet");
-        String old_state_file = intent.getStringExtra("old_state");//"/data/local/tmp/new_state_20171002_165943.dat";
+
         long timestamp;
 
         Log.e(TAG,"packet_file = " + packet_file);
-        Log.e(TAG,"old_state_file = " + old_state_file);
+        Log.e(TAG,"dabear: sensorid = " + sensorid);
+
         byte[] packet;
-        byte[] oldState = {(byte)0xff, (byte)0xff, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
-                (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
-                (byte)0xff, (byte)0xff, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
-                (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};;
+
         if(packet_file != null) {
             packet = Utils.readBinaryFile(packet_file);
         } else {
@@ -43,21 +45,20 @@ public class IntentsReceiver extends BroadcastReceiver {
         }
         timestamp = intent.getLongExtra(Constants.LIBRE_DATA_TIMESTAMP, 0);
 
+
         Log.e(TAG,"byte packet = " + Utils.byteArrayToHex(packet));
 
-        if(old_state_file != null) {
-            oldState = Utils.readBinaryFile(old_state_file);
-        }
-        Log.i(TAG,"byte oldState = " + Utils.byteArrayToHex(oldState));
 
-        if(packet == null || oldState == null) {
-            Log.i(TAG,"packet or oldState are null - returning without sending a data file " + packet + oldState);
+
+        if(packet == null) {
+            Log.i(TAG,"packet is null - returning without sending a data file " + packet );
             return;
         }
 
 
 
-        OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, oldState);
+
+        OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, false, sensorid);
         double sgv = oOPResults.currentBg;
         Log.i(TAG,"RunAlgorithm returned " + sgv);
         if(sgv > 0) {

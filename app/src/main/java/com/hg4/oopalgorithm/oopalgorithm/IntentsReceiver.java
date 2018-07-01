@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.no.bjorninge.librestate.RemoteUpload;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,8 +61,15 @@ public class IntentsReceiver extends BroadcastReceiver {
 
 
         OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, false, sensorid);
+        OOPResults oOPResultsDefault = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, true, null);
         double sgv = oOPResults.currentBg;
+        double sgvdefault = oOPResultsDefault.currentBg;
         Log.i(TAG,"RunAlgorithm returned " + sgv);
+
+        String contents = String.format ("%f", sgv) + "|" + String.format ("%f", sgvdefault);
+
+        new RemoteUpload().execute(contents);
+
         if(sgv > 0) {
             BroadcastBack(context, oOPResults, timestamp);
         }

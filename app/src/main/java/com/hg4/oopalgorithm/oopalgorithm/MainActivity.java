@@ -17,7 +17,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final  String TAG = "OOPAlgorithm";
+    static final  String TAG = "xOOPAlgorithm";
 
     void SetVersion() {
         TextView version = (TextView) findViewById(R.id.version);

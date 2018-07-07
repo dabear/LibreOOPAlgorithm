@@ -8,9 +8,9 @@ import android.util.Log;
 import java.util.Arrays;
 
 public class LibreState {
-    public static String TAG = "LibreState";
-    private static String savedState =  "savedstate";
-    private static String savedSensorId = "savedstatesensorid";
+    private static final String TAG = "xOOPAlgorithm state";
+    private static String SAVED_STATE =  "savedstate";
+    private static String SAVED_SENDOR_ID = "savedstatesensorid";
 
     private static byte[] defaultState = {(byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
@@ -43,8 +43,8 @@ public class LibreState {
         SharedPreferences.Editor edit = prefs.edit();
 
         edit.clear();
-        edit.putString(savedState, Base64.encodeToString(state, Base64.NO_WRAP));
-        edit.putString(savedSensorId, sensorid);
+        edit.putString(SAVED_STATE, Base64.encodeToString(state, Base64.NO_WRAP));
+        edit.putString(SAVED_SENDOR_ID, sensorid);
 
         // we really want this to be sync
         // as we depend on these preferences for the next calls to algorunner
@@ -64,8 +64,8 @@ public class LibreState {
 
         SharedPreferences prefs = context.getSharedPreferences(
                 TAG, Context.MODE_PRIVATE);
-        String savedstate = prefs.getString(savedState, "-NA-");
-        String savedstatesensorid = prefs.getString(savedSensorId, "-NA-");
+        String savedstate = prefs.getString(SAVED_STATE, "-NA-");
+        String savedstatesensorid = prefs.getString(SAVED_SENDOR_ID, "-NA-");
 
 
 
@@ -81,20 +81,16 @@ public class LibreState {
             return getAndSaveDefaultStateForSensor(sensorid, context);
         }
 
-        byte[] decoded;
+        byte[] decoded = getDefaultState();
 
-        //todo: more checks here?
-        if(savedstatesensorid.equals(sensorid)) {
-            try{
-                decoded = Base64.decode(savedstate, Base64.DEFAULT);
-                return decoded;
-            } catch (IllegalArgumentException ex) {
-                Log.e(TAG,"dabear: could not decode sensorstate" );
-            }
+        try{
+            decoded = Base64.decode(savedstate, Base64.DEFAULT);
+        } catch (IllegalArgumentException ex) {
+            Log.e(TAG,"dabear: could not decode sensorstate, returning defaultstate to caller" );
+            return getDefaultState();
         }
+        return decoded;
 
-        Log.e(TAG,"dabear: returning defaultstate to caller" );
-        return getDefaultState();
     }
 
 }

@@ -24,7 +24,7 @@ class HistoricBg {
 class OOPResults {
     double currentBg;
     int currentTime;
-    int currenTrend;
+    int currentTrend;
     HistoricBg [] historicBg;
     long timestamp;
     String serialNumber;
@@ -32,7 +32,7 @@ class OOPResults {
     OOPResults(long timestamp, int currentBg, int currentTime, TrendArrow currenTrend) {
 
         this.currentBg = currentBg;
-        this.currenTrend = 0;// Translate currenTrend TODO:
+        this.currentTrend = 0;// Translate currenTrend TODO:
         this.timestamp = timestamp;
         this.currentTime = currentTime;
         serialNumber="";

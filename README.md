@@ -44,6 +44,7 @@ Download and install java jdk first to make sure the "jarsigner" command is avai
 git clone https://github.com/tzachi-dar/LibreOOPAlgorithm.git
 
 cd LibreOOPAlgorithm
+
 ./scripts/download_apk.sh
 
 ./scripts/create_apk.sh

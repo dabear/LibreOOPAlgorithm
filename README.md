@@ -38,9 +38,15 @@ You can also send it by mail (or copy) it to your phone and install it from ther
 
 
 # If you are using Mac or linux, please do the following:
-Download and install java jdk (important!) first to make sure the "jarsigner" command is available <br/>
-install brew and then do brew install wget from cli <br/>
-Important! Download librelink apk (this specific version: LibreLink_v1.3.2.4_apkpure.com.apk) from apkpure and place it in your home directory on your mac <br/>
+Download and install java jdk first to make sure the "jarsigner" command is available !
+
+
+git clone https://github.com/tzachi-dar/LibreOOPAlgorithm.git
+
+cd LibreOOPAlgorithm
+./scripts/download_apk.sh
+
+./scripts/create_apk.sh
 
 ## Setting xDrip to work with the oop Algorithm.
 

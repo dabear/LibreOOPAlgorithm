@@ -78,8 +78,8 @@ if [ $? -ne 0 ]; then
 
 fi
 
-mv $bdir/temp/apk.aunaligned.zip $HOME/apk.aunaligned.apk
-echo "Finished creating modified apk,  please install this file on your phone: $HOME/apk.aunaligned.apk"
+mv $bdir/temp/apk.aunaligned.zip $HOME/LibreOOPAlgorithm.apk
+echo "Finished creating modified apk,  please install this file on your phone: $HOME/LibreOOPAlgorithm.apk"
 
 
 

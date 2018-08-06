@@ -39,6 +39,27 @@
         android:layout_centerHorizontal="true"
         android:textSize="30sp"/>
 
+        <CheckBox
+            android:id="@+id/RunService"
+            android:layout_below="@+id/sample_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="use service" />
+
+        <CheckBox
+            android:id="@+id/UseForegroundService"
+            android:layout_below="@+id/RunService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="use foreground service" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/UseForegroundService"
+            android:text=""
+            android:id="@+id/stop_service"
+        />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

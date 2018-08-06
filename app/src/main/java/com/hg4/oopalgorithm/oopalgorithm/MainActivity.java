@@ -1,8 +1,16 @@
 package com.hg4.oopalgorithm.oopalgorithm;
 
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View.OnClickListener;
 
 
 import java.io.File;
@@ -18,6 +27,9 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
 
     static final  String TAG = "xOOPAlgorithm";
+    Intent mServiceIntent;
+    private AlwaysOnService mAlwaysOnService;
+    Button stop_service_button;
 
     void SetVersion() {
         TextView version = (TextView) findViewById(R.id.version);
@@ -32,6 +44,93 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    static private boolean DoesForegroundMatch (Context ctx, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+
+                boolean ret =  service.foreground == getPerfBoolean(ctx, "UseForegroundService",false);
+                Log.i (TAG, "DoesForegroundMatch my service found returning " + ret);
+                return ret;
+
+            }
+        }
+        Log.i (TAG, "DoesForegroundMatch not found - returning false");
+        return false;
+    }
+
+    static private boolean isMyServiceRunning(Context ctx, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i (TAG, "isMyServiceRunning - true");
+                return true;
+            }
+        }
+        Log.i (TAG, "isMyServiceRunning - false");
+        return false;
+    }
+
+    public static void savePerfBoolean(Context ctx, String valueKey, boolean value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putBoolean(valueKey, value);
+        edit.commit();
+    }
+
+    static boolean getPerfBoolean(Context ctx, String key, boolean valueDefault) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return prefs.getBoolean(key, valueDefault);
+
+    }
+
+    static private void StopService(Context ctx, boolean isMyServiceRunning) {
+        if(!isMyServiceRunning) {
+            return;
+        }
+        AlwaysOnService AlwaysOnService = new AlwaysOnService(ctx);
+        Intent ServiceIntent = new Intent(ctx, AlwaysOnService.getClass());
+        ctx.stopService(ServiceIntent);
+    }
+
+    static public void StartServiceIfNeeded(Context ctx) {
+        boolean isMyServiceRunning = isMyServiceRunning(ctx, new AlwaysOnService().getClass());
+        boolean RunService = getPerfBoolean(ctx, "RunService", true);
+
+        // If we are running, and in the forground is also right, do nothing
+        if(RunService && isMyServiceRunning) {
+            // We are running, is it in forground?
+            if(DoesForegroundMatch(ctx, new AlwaysOnService().getClass())) {
+                Log.e(TAG, "We are running, all is ok, return");
+                return;
+            }
+        }
+        // We always stop the service, in order to make sure we create it in foreground
+        // as needed.
+        StopService(ctx, isMyServiceRunning);
+
+        if(!RunService) {
+            // Service was already stopped, so nothing to do
+            return;
+        }
+
+        Log.e(TAG,"StartService called isMyServiceRunning = " + isMyServiceRunning + " RunService.ischecked = " + RunService);
+        AlwaysOnService AlwaysOnService = new AlwaysOnService(ctx);
+        Intent ServiceIntent = new Intent(ctx, AlwaysOnService.getClass());
+        ctx.startService(ServiceIntent);
+    }
+
+    public void addListenerOnRunService(int id, final String key) {
+        CheckBox chkIos = findViewById(id );
+        chkIos.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savePerfBoolean(getApplicationContext(), key, ((CheckBox) v).isChecked());
+                StartServiceIfNeeded(getApplicationContext());
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +139,28 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         SetVersion();
+/*
+        stop_service_button = (Button) findViewById(R.id.stop_service);
+        stop_service_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mServiceIntent = new Intent(getApplicationContext(), mAlwaysOnService.getClass());
+                if (isMyServiceRunning(getApplicationContext(), mAlwaysOnService.getClass())) {
+                    stopService(mServiceIntent);
+                }
+            }
+        });
+*/
+
+        CheckBox RunService = findViewById(R.id.RunService);
+        RunService.setChecked(getPerfBoolean(getApplicationContext(),"RunService",true));
+        CheckBox UseForegroundService = findViewById(R.id.UseForegroundService);
+        UseForegroundService.setChecked(getPerfBoolean(getApplicationContext(),"UseForegroundService",false));
+
+        addListenerOnRunService(R.id.RunService,"RunService");
+        addListenerOnRunService(R.id.UseForegroundService,"UseForegroundService");
+
+
+        StartServiceIfNeeded(this);
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -133,6 +254,15 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onDestroy() {
+
+        Log.i(TAG, "Main activity onDestroy called");
+        super.onDestroy();
+
+    }
+
 
     /**
      * A native method that is implemented by the 'native-lib' native library,

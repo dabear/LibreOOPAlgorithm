@@ -11,6 +11,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -84,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public static void savePerfInt(Context ctx, String valueKey, int value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putInt(valueKey, value);
+        edit.commit();
+    }
+
+    static int getPerfInt(Context ctx, String key, int valueDefault) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return prefs.getInt(key, valueDefault);
+
+    }
+
+
     static private void StopService(Context ctx, boolean isMyServiceRunning) {
         if(!isMyServiceRunning) {
             return;
@@ -131,6 +147,62 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void SetRadioButon() {
+        int duration = MainActivity.getPerfInt(this, "TimerDurationSeconds",5*60);
+        RadioGroup radioGroup = findViewById(R.id.radio_group);
+        switch(duration) {
+            case 1:
+                radioGroup.check(R.id.radio_1_sec);
+                break;
+            case 5*60:
+                radioGroup.check(R.id.radio_5_minutes);
+                break;
+            case 60 * 60:
+                radioGroup.check(R.id.radio_1_hour);
+                break;
+            case 365 * 24 *60 * 60:
+                radioGroup.check(R.id.radio_1_year);
+                break;
+            default:
+                Log.e(TAG, "Error wrong duration" + duration);
+        }
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_1_sec:
+                if (checked) {
+                    Log.i(TAG, "radio_1_sec checked = " + checked);
+                    savePerfInt(getApplicationContext(), "TimerDurationSeconds",1);
+                    break;
+                }
+            case R.id.radio_5_minutes:
+                if (checked) {
+                    Log.i(TAG, "radio_5_minutes checked = " + checked);
+                    savePerfInt(getApplicationContext(), "TimerDurationSeconds",300);
+                    break;
+                }
+            case R.id.radio_1_hour:
+                if (checked) {
+                    Log.i(TAG, "radio_1_hour checked = " + checked);
+                    savePerfInt(getApplicationContext(), "TimerDurationSeconds",60*60);
+                    break;
+                }
+            case R.id.radio_1_year:
+                if (checked) {
+                    Log.i(TAG, "radio_1_year checked = " + checked);
+                    savePerfInt(getApplicationContext(), "TimerDurationSeconds",365 * 24 *60*60);
+                    break;
+                }
+        }
+        boolean isMyServiceRunning = isMyServiceRunning(getApplicationContext(), new AlwaysOnService().getClass());
+        StopService(getApplicationContext(),isMyServiceRunning);
+        StartServiceIfNeeded(getApplicationContext());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         SetVersion();
+        SetRadioButon();
 /*
         stop_service_button = (Button) findViewById(R.id.stop_service);
         stop_service_button.setOnClickListener(new View.OnClickListener() {

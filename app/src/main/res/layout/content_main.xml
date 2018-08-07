@@ -40,6 +40,7 @@
         android:textSize="30sp"/>
 
         <CheckBox
+            android:layout_alignParentLeft="true"
             android:id="@+id/RunService"
             android:layout_below="@+id/sample_text"
             android:layout_width="wrap_content"
@@ -47,16 +48,54 @@
             android:text="use service" />
 
         <CheckBox
+            android:layout_alignParentLeft="true"
             android:id="@+id/UseForegroundService"
             android:layout_below="@+id/RunService"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="use foreground service" />
 
+        <TextView
+            android:id="@+id/text_view_id"
+            android:layout_below="@+id/UseForegroundService"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Select timer duration. (Bigger periods means less battery, but increase chance that service will be killed"/>
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_id"
+            android:id="@+id/radio_group"
+            android:text="365 "
+            android:orientation="vertical">
+            <RadioButton android:id="@+id/radio_1_sec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 sec"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/radio_5_minutes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5 minutes"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/radio_1_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 hour"
+                android:onClick="onRadioButtonClicked"/>
+            <RadioButton android:id="@+id/radio_1_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="365 days"
+                android:onClick="onRadioButtonClicked"/>
+        </RadioGroup>
+
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/UseForegroundService"
+            android:layout_below="@+id/radio_group"
             android:text=""
             android:id="@+id/stop_service"
         />

@@ -54,9 +54,10 @@ import java.util.TimerTask;
 
             //initialize the TimerTask's job
             initializeTimerTask();
-
+            int duration = MainActivity.getPerfInt(this, "TimerDurationSeconds",5*60);
             //schedule the timer, to wake up every 1 second
-            timer.schedule(timerTask, 1000,  1000); // 60 * 60
+            Log.i(TAG, "Alwayson service - starting timer every " + duration + " seconds.");
+            timer.schedule(timerTask, 1000,  duration * 1000);
         }
 
         /**

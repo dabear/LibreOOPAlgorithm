@@ -28,6 +28,8 @@ public class IntentsReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.e(TAG,"we are inside the broadcast reciever");
 
+        MainActivity.StartServiceIfNeeded(context);
+
         String sensorid = intent.getStringExtra(Constants.LIBRE_SN);
         String packet_file = intent.getStringExtra("packet");
 
@@ -45,17 +47,11 @@ public class IntentsReceiver extends BroadcastReceiver {
         }
         timestamp = intent.getLongExtra(Constants.LIBRE_DATA_TIMESTAMP, 0);
 
-
         Log.e(TAG,"byte packet = " + Utils.byteArrayToHex(packet));
-
-
-
         if(packet == null) {
             Log.i(TAG,"packet is null - returning without sending a data file " + packet );
             return;
         }
-
-
 
 
         OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, false, sensorid);

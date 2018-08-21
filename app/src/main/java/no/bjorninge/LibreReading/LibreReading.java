@@ -139,6 +139,7 @@ public class LibreReading {
                 showmsg("iserror:" + (isError ? "true" : "false"));
 
                 if (isError) {
+                    showmsg("errorcontents in jsonstring was: " + jsonStr);
                     return null;
                 }
 

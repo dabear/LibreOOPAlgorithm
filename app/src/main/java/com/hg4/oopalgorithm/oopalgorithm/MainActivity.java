@@ -276,6 +276,16 @@ public class MainActivity extends AppCompatActivity {
 
             ArrayList<LibreReading> readouts = LibreReading.fetchForProcessing(fetchUrl);
 
+            if (readouts == null) {
+                this.showmsg("readouts was null, aborting current run: ");
+                return null;
+            }
+
+            if (readouts.size() == 0) {
+                this.showmsg("readouts size was 0, aborting current run: ");
+                return null;
+            }
+
 
             this.showmsg("read requests (" + readouts.size() + "): ");
             for (LibreReading reading : readouts) {

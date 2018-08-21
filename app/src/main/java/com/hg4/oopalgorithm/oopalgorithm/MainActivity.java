@@ -502,6 +502,16 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
 
             ArrayList<LibreReading> readouts = LibreReading.fetchForProcessing(fetchUrl);
 
+            if (readouts == null) {
+                this.showmsg("readouts was null, aborting current run: ");
+                return null;
+            }
+
+            if (readouts.size() == 0) {
+                this.showmsg("readouts size was 0, aborting current run: ");
+                return null;
+            }
+
 
             this.showmsg("read requests (" + readouts.size() + "): ");
             for (LibreReading reading : readouts) {

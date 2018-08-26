@@ -21,7 +21,7 @@ public class LibreState {
         return Arrays.copyOf(defaultState, defaultState.length);
     }
 
-    private static byte[] getAndSaveDefaultStateForSensor(String sensorid, Context context){
+    public static byte[] getAndSaveDefaultStateForSensor(String sensorid, Context context){
         byte[] newstate1 = getDefaultState();
         saveSensorState(sensorid, newstate1, context);
         return newstate1;

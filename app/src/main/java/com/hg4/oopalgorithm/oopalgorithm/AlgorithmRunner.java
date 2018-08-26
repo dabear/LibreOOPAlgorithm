@@ -10,6 +10,7 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.ApplicationR
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.NonActionableConfiguration;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingNative;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingOutputs;
+import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingResult;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.DataProcessingException;
 import com.abbottdiabetescare.flashglucose.sensorabstractionservice.dataprocessing.GlucoseValue;
 import com.no.bjorninge.librestate.LibreState;
@@ -65,9 +66,16 @@ public class AlgorithmRunner {
             data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, packet, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset, oldState);
 
         } catch (DataProcessingException e) {
-            Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
-            Log.e(TAG,"gson:");
+            Log.e(TAG,"cought DataProcessingException on data_processing_native.processScan ", e);
+
+            if(e.getResult() == DataProcessingResult.FATAL_ERROR_BAD_ARGUMENTS) {
+                Log.e(TAG,"Exception is FATAL_ERROR_BAD_ARGUMENTS reseting state");
+                LibreState.getAndSaveDefaultStateForSensor("-NA-", context);
+            }
             return new OOPResults(timestamp, -2, 0, null);
+        } catch (Exception e) {
+            Log.e(TAG,"cought exception on data_processing_native.processScan ", e);
+            return new OOPResults(timestamp, -3, 0, null);
         }
         Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs);
         if(data_processing_outputs == null) {
@@ -94,7 +102,6 @@ public class AlgorithmRunner {
             OOPResults.setHistoricBg(data_processing_outputs.getAlgorithmResults().getHistoricGlucose());
         } else {
             Log.e(TAG,"getAlgorithmResults.getHistoricGlucose() returned null");
-            Log.e(TAG,"gson:");
         }
         Log.e(TAG,"gson:"+OOPResults.toGson());
 

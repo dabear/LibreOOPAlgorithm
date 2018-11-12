@@ -51,14 +51,14 @@ cd LibreOOPAlgorithm
 
 ## Setting xDrip to work with the oop Algorithm.
 
-Currently tomato, blukon, librealarm and direct scanning supports the libre oop Algorithm. <br/>
+Currently Tomato (MiaoMiao), BluCon, LibreAlarm and direct scanning supports the Libre OOP Algorithm. <br/>
 
-xDrip has to be at a version after  21st may 2018 nightly. (This probably means that you have to download the latest nightly).<br/>
+xDrip has to be at a version after  21st may 2018 nightly. (This probably means that you have to download the latest nightly).
 
 On xdrip go to setting->less common settings->other misc options-> and set out of process blukon algorithm. 
-(If this option is disabled, this means that your version of xDrip is too old). <br/>
+(If this option is disabled, this means that your version of xDrip is too old).
 
 ## The propose of this project is to allow opensource projects to use the same algorithm for bg calculation.
-This is a specific example that simulates official results, but anyone can implement whatever algorithm that he wants. <br/>
+This is a specific example that simulates official results, but anyone can implement whatever algorithm that he wants.
 
-Please see the class IntentsReceiver for how to send and receive intents with raw data from the libre sensor. <br/>
+Please see the class IntentsReceiver for how to send and receive intents with raw data from the libre sensor.

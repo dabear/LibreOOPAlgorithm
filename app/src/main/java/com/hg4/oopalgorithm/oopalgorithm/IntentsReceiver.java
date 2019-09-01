@@ -16,6 +16,8 @@ import org.json.JSONObject;
 class Constants {
     static public final String XDRIP_PLUS_LIBRE_DATA = "com.eveningoutpost.dexdrip.LIBRE_DATA";
     static public final String LIBRE_DATA_BUFFER = "com.eveningoutpost.dexdrip.Extras.DATA_BUFFER";
+    static public final String LIBRE_PATCH_UID_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_UID_BUFFER";
+    static public final String LIBRE_PATCH_INFO_BUFFER = "com.eveningoutpost.dexdrip.Extras.LIBRE_PATCH_INFO_BUFFER";
     static public final String LIBRE_DATA_TIMESTAMP = "com.eveningoutpost.dexdrip.Extras.TIMESTAMP";
     static public final String XDRIP_PLUS_NS_EMULATOR = "com.eveningoutpost.dexdrip.NS_EMULATOR";
     static public final String LIBRE_SN = "com.eveningoutpost.dexdrip.Extras.LIBRE_SN";
@@ -53,13 +55,31 @@ public class IntentsReceiver extends BroadcastReceiver {
             return;
         }
 
+        byte []patchUid = intent.getByteArrayExtra(Constants.LIBRE_PATCH_UID_BUFFER);
+        if(patchUid == null) {
+            Log.i(TAG,"patchUid is null - returning without sending data ");
+            return;
+        }
+        Log.e(TAG,"patchUid = " + Utils.byteArrayToHex(patchUid));
 
-        OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, false, sensorid);
+        byte []patchInfo = intent.getByteArrayExtra(Constants.LIBRE_PATCH_INFO_BUFFER);
+        if(patchInfo == null) {
+            Log.i(TAG,"patchInfo is null - returning without sending data ");
+            return;
+        }
+        Log.e(TAG,"patchInfo = " + Utils.byteArrayToHex(patchInfo));
+
+        
+        OOPResults oOPResults = AlgorithmRunner.RunAlgorithm(timestamp, context, packet, patchUid, patchInfo, false, sensorid);
         double sgv = oOPResults.currentBg;
         Log.i(TAG,"RunAlgorithm returned " + sgv);
         if(sgv > 0) {
             BroadcastBack(context, oOPResults, timestamp);
         }
+
+    }
+
+    void SendErrorBack(Context context, String error){
 
     }
 

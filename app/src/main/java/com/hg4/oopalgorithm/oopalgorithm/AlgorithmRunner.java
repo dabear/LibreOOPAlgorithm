@@ -20,11 +20,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-
+import com.abbottdiabetescare.flashglucose.sensorabstractionservice.AttenuationConfiguration;
 
 public class AlgorithmRunner {
 
-    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, boolean usedefaultstatealways, String sensorid) {
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet,  byte[] patchUid, byte[] patchInfo, boolean usedefaultstatealways, String sensorid) {
         byte oldState[];
 
         DataProcessingNative data_processing_native= new DataProcessingNative(1095774808 /*DataProcessingType.APOLLO_PG2*/);
@@ -32,21 +32,24 @@ public class AlgorithmRunner {
         MyContextWrapper my_context_wrapper = new MyContextWrapper(context);
 
         data_processing_native.initialize(my_context_wrapper);
-        byte[] bDat = {(byte)0xdf, 0x00, 0x00, 0x01, 01, 02};
-        boolean bret = data_processing_native.isPatchSupported(bDat , ApplicationRegion.LEVEL_1);
+        // us data
+        byte[] bDat = {(byte)0xe5, 0x00, 0x03, 0x02, (byte)0xe0, 0x12};
 
+        boolean bret = data_processing_native.isPatchSupported(bDat , ApplicationRegion.LEVEL_2); //LEVEL 2 is us, level_4 is IL
         Log.e(TAG,"data_processing_native.isPatchSupported11 returned " + bret);
         if(!bret) {
             Log.e(TAG,"gson:");
             return new OOPResults(timestamp,-1, 0, null);
         }
 
-        AlarmConfiguration alarm_configuration = new AlarmConfiguration(70, 180);
-        NonActionableConfiguration non_actionable_configuration = new NonActionableConfiguration (true, true, 0, 40, 500, -2, 2);
+        AlarmConfiguration alarm_configuration = new AlarmConfiguration(70, 240);
+        NonActionableConfiguration non_actionable_configuration = new NonActionableConfiguration (false, true, 0, 70, 500, -2, 2); //??? First should be true???
 
-        int sensorStartTimestamp = 0x0e181349;
-        int sensorScanTimestamp = 0x0e1c4794;
-        int currentUtcOffset = 0x0036ee80;
+        
+        
+        int sensorStartTimestamp = 303288019;
+        int sensorScanTimestamp = 303604158;//sensorStartTimestamp + 3600*10 - did not change anything;
+        int currentUtcOffset = 10800000;
         if(usedefaultstatealways) {
             Log.e(TAG, "dabear: using default oldstate");
             oldState = LibreState.getDefaultState();
@@ -60,10 +63,21 @@ public class AlgorithmRunner {
         Log.e(TAG, "dabear: oldstate is now :" + Arrays.toString(oldState));
 
 
+        
         DataProcessingOutputs data_processing_outputs = null;
+        
+        final int ATTENUATION_MINIMUM_ID_TO_ENABLE = 20160;
+        AttenuationConfiguration attenuationConfiguration = new AttenuationConfiguration(ATTENUATION_MINIMUM_ID_TO_ENABLE, false, false, false, false); // Here they are all different ???
+        //byte[] patchInfo = {(byte)0xdf, (byte)0x00, (byte)0x00, (byte)0x08, (byte)0x94, (byte)0x03};//this.rf.getPatchInfo(tag);// il
+        
+        
+        byte[] compositeState = {(byte)0x1f, (byte)0x23, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x4a, (byte)0x2a, (byte)0xcb, (byte)0xf3, (byte)0xa0, (byte)0x52, (byte)0x5b, (byte)0x40, (byte)0x1f, (byte)0x23, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x76, (byte)0xc4, (byte)0xf6, (byte)0x4b, (byte)0x66, (byte)0x59, (byte)0xc7, (byte)0xbf };
+        byte[] attenuationState = {(byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7f, (byte)0x7e, (byte)0x73, (byte)0x79, (byte)0x70, (byte)0x6b, (byte)0x68, (byte)0x65, (byte)0x63, (byte)0x5f, (byte)0x5b, (byte)0x5a, (byte)0x57, (byte)0x55, (byte)0x55, (byte)0x54, (byte)0x56, (byte)0x58, (byte)0x59, (byte)0x5d, (byte)0x5d, (byte)0x5c, (byte)0x5e, (byte)0x55, (byte)0x51, (byte)0x55, (byte)0x62, (byte)0x66, (byte)0x75, (byte)0x7c, (byte)0x7e, (byte)0x7d, (byte)0x7e, (byte)0x7f, (byte)0x7e, (byte)0x7e, (byte)0x74, (byte)0x6c, (byte)0x63, (byte)0x5a, (byte)0x52, (byte)0x49, (byte)0x48, (byte)0x51, (byte)0x5f, (byte)0x6b, (byte)0x74, (byte)0x7b, (byte)0x7e, (byte)0x7e, (byte)0x7e, (byte)0x7e, (byte)0x7e, (byte)0x7e, (byte)0x7e, (byte)0x7a, (byte)0x73, (byte)0x6f, (byte)0x19, (byte)0x23, (byte)0x0c, (byte)0x41, (byte)0x40, (byte)0x5c, (byte)0x75, (byte)0x78, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00};
+        
+        
         try {
-
-            data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, packet, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset, oldState);
+            data_processing_outputs = data_processing_native.processScan(alarm_configuration, non_actionable_configuration, attenuationConfiguration, patchUid, patchInfo,  packet, sensorStartTimestamp, sensorScanTimestamp,
+            		60, 20160 /* PatchTimeValues getPatchTimeValues */,  currentUtcOffset, compositeState , attenuationState );
 
         } catch (DataProcessingException e) {
             Log.e(TAG,"cought DataProcessingException on data_processing_native.processScan ", e);
@@ -83,9 +97,11 @@ public class AlgorithmRunner {
             Log.e(TAG,"gson:");
             return new OOPResults(timestamp,-3, 0, null);
         }
-        Log.e(TAG,"data_processing_native.processScan returned successfully " + data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue());
+        Log.e(TAG,"data_processing_native.processScan returned successfully bg = " + 
+           data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue()+ " id = " +
+           data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getId());
 
-        byte[] newState = data_processing_outputs.getNewState();
+        byte[] newState = null; //???data_processing_outputs.getNewState();
 
         if(sensorid != null) {
             LibreState.saveSensorState(sensorid, newState, context);

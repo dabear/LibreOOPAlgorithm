@@ -1,7 +1,7 @@
 
-var ApkPureStartPage = "https://apkpure.com/librelink/com.librelink.app/download?from=details";
+var ApkPureStartPage = "https://apkpure.com/freestyle-librelink-us/com.freestylelibre.app.us/download?from=details";
 var ApkPureLocalPage = "LibreLink\\LibreLink.latest.html";
-var LibreLinkApk = "LibreLink\\LibreLink_v1.3.2.4_apkpure.com.apk";
+var LibreLinkApk = "LibreLink\\LibreLink_us_latest_apkpure.com.apk";
 
 function GetStartingPage() {
     // Does wget on https://apkpure.com/librelink/com.librelink.app/download?from=details
@@ -61,7 +61,7 @@ function DownloadApk(tag) {
     WScript.Echo("Downloading file " + filename)
 
     var oShell = WScript.CreateObject("WScript.Shell");
-    oExec = oShell.Exec('cmd /c tools\\windows\\wget.exe -O LibreLink\\LibreLink_v1.3.2.4_apkpure.com.apk --no-check-certificate \"' + filename +"\"" );
+    oExec = oShell.Exec('cmd /c tools\\windows\\wget.exe -O '+LibreLinkApk + ' --no-check-certificate \"' + filename +"\"" );
     var strOutput = oExec.StdErr.ReadAll();
     WScript.Echo("StdOut "+strOutput);
 }

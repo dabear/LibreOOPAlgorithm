@@ -5,7 +5,7 @@ rem ==============
 mkdir LibreLink
 if exist LibreLink\apk goto apk_unzipped
 
-if exist LibreLink\LibreLink_v1.3.2.4_apkpure.com.apk goto apk_downloaded
+if exist LibreLink\LibreLink_us_latest_apkpure.com.apk goto apk_downloaded
 
 cscript scripts\DownloadApk.js
 if errorlevel 1 (
@@ -16,7 +16,7 @@ if errorlevel 1 (
 :apk_downloaded
 
 mkdir LibreLink\apk
-tools\windows\7z -oLibreLink\apk x LibreLink\LibreLink_v1.3.2.4_apkpure.com.apk
+tools\windows\7z -oLibreLink\apk x LibreLink\LibreLink_us_latest_apkpure.com.apk
 
 
 :apk_unzipped
@@ -42,7 +42,7 @@ copy LibreLink\apk\lib\x86_64\libDataProcessing.so temp\dir\lib\x86_64\libDataPr
 
 
 
-copy LibreLink\LibreLink_v1.3.2.4_apkpure.com.apk temp\dir\res\raw\original_apk
+copy LibreLink\LibreLink_us_latest_apkpure.com.apk temp\dir\res\raw\original_apk
 
 cd temp\dir
 ..\..\tools\windows\7z -tzip a apk.aunaligned.zip

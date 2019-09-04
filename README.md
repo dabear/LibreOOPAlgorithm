@@ -24,9 +24,9 @@ Open the apk, and make sure that you see the message "Algorithm worked correctly
 1) Go to list of receivers and enter 127.0.0.1:5000
 1) Go to nfc scan features-> enable scanning
 1) Start a new sensor (answer not today).
-1) Go to settings->less common settings->other misc options-> and set "use oop algorithm"
+1) Go to settings->less common settings->other misc options-> and set "use oop algorithm"  
 Now use xdrip to scan the libre.  
-Hopefully all will work. Let me know in any case.
+Hopefully all will work. Let me know in any case.  
 
 
 

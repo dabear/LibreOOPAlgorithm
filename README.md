@@ -1,8 +1,8 @@
 # LibreOOPAlgorithm
 
 
-## How to build for us sensors (and maybe even germany and other contries).
-Currently only this version of xDrip works with the new OOP, and only with manual scanning.
+## How to build for us sensors (and maybe even germany and other countries).
+Currently only the version below of xDrip works with the new OOP, and only with manual scanning.
 Once I'll know that this works, I'll continue to work with hw vendors to have full support.
 
 ### building the apk
@@ -11,12 +11,12 @@ cd LibreOOPAlgorithm<br/>
 git checkout libre-us-new-sensor<br/>
 scripts\create_apk.cmd<br/>
 
-Install the apk: adb install -r LibreOOPAlgorithm.apk
-open the apk, and make sure that you see the message "Algorithm worked correctly".
+Install the apk: adb install -r LibreOOPAlgorithm.apk<br/>
+Open the apk, and make sure that you see the message "Algorithm worked correctly".<br/>
 
 
-### Download and install xdrip on your phone (if you already have xdrip on your phone, you will have to
-remove it first. You can backup your DB and settings first).
+### Download and install xdrip on your phone
+(if you already have xdrip on your phone, you will have to remove it first. You can backup your DB and settings first).  
 1) You must use the version from here: https://drive.google.com/file/d/1I7oZw9KRnclsY2MoZgeiRNKNtKv2W44M/view?usp=sharing
 1) Choose libre as the sensor type.
 1) Choose miaomiao
@@ -25,7 +25,7 @@ remove it first. You can backup your DB and settings first).
 1) Go to nfc scan features-> enable scanning
 1) Start a new sensor (answer not today).
 1) Go to settings->less common settings->other misc options-> and set "use oop algorithm"
-Now use xdrip to scan the libre. 
+Now use xdrip to scan the libre.  
 Hopefully all will work. Let me know in any case.
 
 

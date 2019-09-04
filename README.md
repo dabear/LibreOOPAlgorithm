@@ -1,4 +1,43 @@
 # LibreOOPAlgorithm
+
+
+## How to build for us sensors (and maybe even germany and other contries).
+Currently only this version of xDrip works with the new OOP, and only with manual scanning.
+Once I'll know that this works, I'll continue to work with hw vendors to have full support.
+
+### building the apk
+git clone https://github.com/tzachi-dar/LibreOOPAlgorithm.git<br/>
+cd LibreOOPAlgorithm<br/>
+git checkout libre-us-new-sensor<br/>
+scripts\create_apk.cmd<br/>
+
+Install the apk: adb install -r LibreOOPAlgorithm.apk
+open the apk, and make sure that you see the message "Algorithm worked correctly".
+
+
+### Download and install xdrip on your phone (if you already have xdrip on your phone, you will have to
+remove it first. You can backup your DB and settings first).
+1) You must use the version from here: https://drive.google.com/file/d/1I7oZw9KRnclsY2MoZgeiRNKNtKv2W44M/view?usp=sharing
+1) Choose libre as the sensor type.
+1) Choose miaomiao
+1) Go to settings->hw data source and choose libre wifi
+1) Go to list of receivers and enter 127.0.0.1:5000
+1) Go to nfc scan features-> enable scanning
+1) Start a new sensor (answer not today).
+1) Go to settings->less common settings->other misc options-> and set "use oop algorithm"
+Now use xdrip to scan the libre. 
+Hopefully all will work. Let me know in any case.
+
+
+
+
+
+
+## Normal oop 
+
+
+
+
 This is an apk that allows translating libre sensor readings to blood glucose.
 It has been able to get results extremely close to the libre reader without any calibrations.
 Should be used with xDrip-plus.

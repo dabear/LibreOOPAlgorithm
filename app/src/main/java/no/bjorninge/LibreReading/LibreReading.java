@@ -139,10 +139,8 @@ public class LibreReading {
                 showmsg("iserror:" + (isError ? "true" : "false"));
 
                 if (isError) {
-<<<<<<< HEAD
+
                     showmsg("errorcontents in jsonstring was: " + jsonStr);
-=======
->>>>>>> separate upload/download of readings to another class, supports advanced parameters and upload newstate
                     return null;
                 }
 

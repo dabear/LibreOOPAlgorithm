@@ -25,11 +25,12 @@ import com.abbottdiabetescare.flashglucose.sensorabstractionservice.AttenuationC
 
 public class AlgorithmRunner {
 
-    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet, byte[] oldState){
-        int sensorStartTimestamp=0x0e181349;
-        int sensorScanTimestamp=0x0e1c4794;
-        int currentUtcOffset = 0x0036ee80;
-        return RunAlgorithm(timestamp, context, packet, oldState, sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
+    static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet){
+
+        byte[] patchUid = null;
+        byte[] patchInfo = null;
+        String sensorid = "anid";
+        return RunAlgorithm(timestamp, context, packet, patchUid, patchInfo, true, sensorid);
 
     }
     static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet,  byte[] patchUid, byte[] patchInfo, boolean usedefaultstatealways, String sensorid) {
@@ -58,15 +59,16 @@ public class AlgorithmRunner {
         int currentUtcOffset = 10800000;
         if(usedefaultstatealways) {
             Log.e(TAG, "dabear: using default oldstate");
-            oldState = LibreState.getDefaultState();
+            //oldState = LibreState.getDefaultState();
         } else {
             Log.e(TAG, "dabear:  getting state from persistent storage:");
-            oldState = LibreState.getStateForSensor(sensorid, context);
+            //oldState = LibreState.getStateForSensor(sensorid, context);
+
         }
 
 
 
-        Log.e(TAG, "dabear: oldstate is now :" + Arrays.toString(oldState));
+        //Log.e(TAG, "dabear: oldstate is now :" + Arrays.toString(oldState));
 
 
         
@@ -113,10 +115,10 @@ public class AlgorithmRunner {
             LibreState.saveSensorState(sensorid, newState, context);
         }
 
-        byte[] newState = data_processing_outputs.getNewState();
+        //byte[] newState = data_processing_outputs.
         OOPResults OOPResults = new OOPResults(timestamp,  data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getValue(),
                 data_processing_outputs.getAlgorithmResults().getRealTimeGlucose().getId(),
-                                                data_processing_outputs.getAlgorithmResults().getTrendArrow(), newState );
+                                                data_processing_outputs.getAlgorithmResults().getTrendArrow());
 
         if (data_processing_outputs.getAlgorithmResults().getHistoricGlucose() != null) {
             for(GlucoseValue glucoseValue : data_processing_outputs.getAlgorithmResults().getHistoricGlucose()) {

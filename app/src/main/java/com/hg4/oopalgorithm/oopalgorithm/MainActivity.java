@@ -559,8 +559,13 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                     showmsg("sensorScanTimestamp in algorunner: " + sensorScanTimestamp);
                     showmsg("currentUtcOffset in algorunner: " + currentUtcOffset);
 
+                    byte[] patchInfo = null;
+                    byte[] patchUid = null;
 
-                    OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
+                    OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded);
+                    //OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
+
+                    //OOPResults results = AlgorithmRunner.RunAlgorithm(0, getApplicationContext(), decoded, oldState,  sensorStartTimestamp, sensorScanTimestamp, currentUtcOffset);
                     int sgv = (int) results.currentBg;
 
 
@@ -578,7 +583,7 @@ byte []packet1 = {(byte)0x65 ,(byte)0xc5 ,(byte)0xf0 ,(byte)0x14 ,(byte)0x03 ,(b
                     reading.algoResult = "Exception: " + ex.getMessage();
                 }
 
-
+                String uploadUrl = LIBRE_OOP_WEBSITE  + "/api/UploadResults";
                 LibreReading.uploadProcessedReading(uploadUrl, LIBRE_OOP_WEB_PROCESSING_TOKEN  , reading);
 
 

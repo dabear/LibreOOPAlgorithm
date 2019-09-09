@@ -27,8 +27,10 @@ public class AlgorithmRunner {
 
     static public OOPResults RunAlgorithm(long timestamp, Context context, byte[] packet){
 
-        byte[] patchUid = null;
-        byte[] patchInfo = null;
+        //inferred from l1 sensor test
+        byte[] patchUid = { (byte) 0xDF, 0x00, 0x00, 0x04, 0x00, (byte)0xa0};
+        byte[] patchInfo = {(byte)0xe0, 0x07, (byte)0xa0, 0x00, 0x04, 0x3d, 0x7f, 0x7b};
+
         String sensorid = "anid";
         return RunAlgorithm(timestamp, context, packet, patchUid, patchInfo, true, sensorid);
 
